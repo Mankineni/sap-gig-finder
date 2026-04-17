@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1D9E75">
+  <link rel="manifest" href="manifest.json">
+  <title>SAP Gig Radar</title>
+  <style>
+    :root {
+      --color-bg: #ffffff;
+      --color-surface: #f5f5f5;
+      --color-text: #1a1a1a;
+      --color-text-muted: #666666;
+      --color-border: #e0e0e0;
+      --color-primary: #1D9E75;
+      --color-score-high: #1D9E75;
+      --color-score-mid: #d4930d;
+      --color-badge-gulp: #0d9488;
+      --color-badge-freelancermap: #7c3aed;
+      --color-badge-linkedin: #2563eb;
+      --color-badge-upwork: #16a34a;
+      --color-badge-eursap: #ea580c;
+      --color-badge-direct: #0891b2;
+      --color-tag-bg: #e5e7eb;
+      --color-tag-text: #4b5563;
+      --color-offline-bg: #fef3c7;
+      --color-offline-text: #92400e;
+      --color-btn-active-bg: #1D9E75;
+      --color-btn-active-text: #ffffff;
+      --color-btn-bg: #e5e7eb;
+      --color-btn-text: #374151;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-bg: #111111;
+        --color-surface: #1e1e1e;
+        --color-text: #e5e5e5;
+        --color-text-muted: #a3a3a3;
+        --color-border: #333333;
+        --color-tag-bg: #374151;
+        --color-tag-text: #d1d5db;
+        --color-offline-bg: #451a03;
+        --color-offline-text: #fcd34d;
+        --color-btn-bg: #374151;
+        --color-btn-text: #d1d5db;
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.5;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+
+    /* Header */
+    header {
+      padding: 24px 0 16px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    header h1 { font-size: 24px; font-weight: 700; }
+    .subtitle { font-size: 14px; color: var(--color-text-muted); margin-top: 4px; }
+
+    .btn-refresh {
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .btn-refresh:hover { opacity: 0.9; }
+
+    /* Offline banner */
+    .offline-banner {
+      display: none;
+      background: var(--color-offline-bg);
+      color: var(--color-offline-text);
+      text-align: center;
+      padding: 8px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .offline-banner.visible { display: block; }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      padding: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--color-btn-bg);
+      color: var(--color-btn-text);
+      border: none;
+      padding: 6px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.15s, color 0.15s;
+    }
+    .filter-btn:hover { opacity: 0.85; }
+    .filter-btn.active {
+      background: var(--color-btn-active-bg);
+      color: var(--color-btn-active-text);
+    }
+
+    /* Card grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      padding-bottom: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .card-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 16px;
+      transition: transform 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .card:hover { transform: translateY(-2px); }
+
+    .card-title { font-size: 16px; font-weight: 700; line-height: 1.3; }
+
+    .card-badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .pill-source-gulp          { background: var(--color-badge-gulp); }
+    .pill-source-freelancermap { background: var(--color-badge-freelancermap); }
+    .pill-source-linkedin      { background: var(--color-badge-linkedin); }
+    .pill-source-upwork        { background: var(--color-badge-upwork); }
+    .pill-source-eursap        { background: var(--color-badge-eursap); }
+
+    .pill-score-high { background: var(--color-score-high); }
+    .pill-score-mid  { background: var(--color-score-mid); }
+
+    .pill-direct {
+      background: transparent;
+      border: 1px solid var(--color-badge-direct);
+      color: var(--color-badge-direct);
+    }
+
+    .card-meta { font-size: 13px; color: var(--color-text-muted); }
+
+    .card-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 500;
+      background: var(--color-tag-bg);
+      color: var(--color-tag-text);
+    }
+
+    .btn-apply {
+      display: inline-block;
+      margin-top: auto;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      text-align: center;
+    }
+    .btn-apply:hover { opacity: 0.9; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 16px;
+      color: var(--color-text-muted);
+      font-size: 16px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--color-border);
+      padding: 16px 0;
+      font-size: 13px;
+      color: var(--color-text-muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="offline-banner" id="offlineBanner">Showing cached report</div>
+
+<div class="container">
+  <header>
+    <div class="header-row">
+      <div>
+        <h1>SAP Gig Radar</h1>
+        <div class="subtitle" id="subtitle">Last updated: Unknown</div>
+      </div>
+      <button class="btn-refresh" id="btnRefresh">Refresh</button>
+    </div>
+  </header>
+
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="top">Score 8+</button>
+    <button class="filter-btn" data-filter="remote">Remote 100%</button>
+    <button class="filter-btn" data-filter="parttime">Part-time (&le;3 days)</button>
+  </div>
+
+  <div id="cardGrid" class="card-grid"></div>
+  <div id="emptyState" class="empty-state" style="display:none">No gigs match this filter</div>
+
+  <footer id="footer"></footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  let allListings = [];
+  let activeFilter = "all";
+  let totalInFile = 0;
+  let deadRemoved = 0;
+
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => document.querySelectorAll(sel);
+
+  // ---- Service Worker ----
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  }
+
+  // ---- Offline detection ----
+  function updateOnlineStatus() {
+    const banner = $("#offlineBanner");
+    if (!navigator.onLine) {
+      banner.classList.add("visible");
+    } else {
+      banner.classList.remove("visible");
+    }
+  }
+  window.addEventListener("online", updateOnlineStatus);
+  window.addEventListener("offline", updateOnlineStatus);
+  updateOnlineStatus();
+
+  // ---- Fetch data ----
+  async function fetchData() {
+    try {
+      const resp = await fetch("./gigs_latest.json");
+      if (!resp.ok) throw new Error("HTTP " + resp.status);
+      const data = await resp.json();
+      totalInFile = data.length;
+      deadRemoved = data.filter(function (l) { return l.status === "dead" || l.status === "expired"; }).length;
+      allListings = data.filter(function (l) { return l.status === "live"; });
+      updateSubtitle();
+      render();
+    } catch (e) {
+      allListings = [];
+      totalInFile = 0;
+      deadRemoved = 0;
+      $("#subtitle").textContent = "Last updated: Failed to load data";
+      render();
+    }
+  }
+
+  function updateSubtitle() {
+    var ts = "Unknown";
+    if (allListings.length > 0 && allListings[0].verified_at) {
+      var d = new Date(allListings[0].verified_at);
+      ts = d.toLocaleDateString() + " " + d.toLocaleTimeString();
+    }
+    $("#subtitle").textContent = "Last updated: " + ts;
+  }
+
+  // ---- Filtering ----
+  function applyFilter(listings) {
+    switch (activeFilter) {
+      case "top":      return listings.filter(function (l) { return l.score >= 8; });
+      case "remote":   return listings.filter(function (l) { return l.remote_pct === 100; });
+      case "parttime": return listings.filter(function (l) { return l.workload_days !== null && l.workload_days <= 3; });
+      default:         return listings;
+    }
+  }
+
+  // ---- Rendering ----
+  function escapeHtml(str) {
+    var div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderCard(listing) {
+    var scoreClass = listing.score >= 8 ? "pill-score-high" : "pill-score-mid";
+    var sourceClass = "pill-source-" + listing.source;
+    var days = listing.workload_days !== null ? listing.workload_days : "Flexible";
+    var tags = (listing.tech_stack || []).slice(0, 3);
+
+    var tagsHtml = tags.map(function (t) {
+      return '<span class="tag">' + escapeHtml(t) + '</span>';
+    }).join("");
+
+    var directBadge = "";
+    if (listing.is_agency === false) {
+      directBadge = '<span class="pill pill-direct">Direct client</span>';
+    }
+
+    return '<div class="card">' +
+      '<div class="card-title">' + escapeHtml(listing.title) + '</div>' +
+      '<div class="card-badges">' +
+        '<span class="pill ' + sourceClass + '">' + escapeHtml(listing.source) + '</span>' +
+        '<span class="pill ' + scoreClass + '">Score ' + listing.score + '</span>' +
+        directBadge +
+      '</div>' +
+      '<div class="card-meta">Days/week: ' + days + '</div>' +
+      '<div class="card-meta">Remote: ' + listing.remote_pct + '%</div>' +
+      (tagsHtml ? '<div class="card-tags">' + tagsHtml + '</div>' : '') +
+      '<a class="btn-apply" href="' + escapeHtml(listing.url) + '" target="_blank" rel="noopener">Apply &rarr;</a>' +
+    '</div>';
+  }
+
+  function render() {
+    var filtered = applyFilter(allListings);
+    var grid = $("#cardGrid");
+    var empty = $("#emptyState");
+
+    if (filtered.length === 0) {
+      grid.innerHTML = "";
+      empty.style.display = "block";
+    } else {
+      empty.style.display = "none";
+      grid.innerHTML = filtered.map(renderCard).join("");
+    }
+
+    $("#footer").textContent =
+      "Showing " + filtered.length + " of " + allListings.length +
+      " live gigs (" + totalInFile + " total in file, " + deadRemoved + " dead removed)";
+  }
+
+  // ---- Filter buttons ----
+  $("#filterBar").addEventListener("click", function (e) {
+    var btn = e.target.closest(".filter-btn");
+    if (!btn) return;
+    activeFilter = btn.dataset.filter;
+    $$(".filter-btn").forEach(function (b) { b.classList.remove("active"); });
+    btn.classList.add("active");
+    render();
+  });
+
+  // ---- Refresh button ----
+  $("#btnRefresh").addEventListener("click", fetchData);
+
+  // ---- Init ----
+  fetchData();
+  setInterval(fetchData, 60 * 60 * 1000);
+})();
+</script>
+</body>
+</html>

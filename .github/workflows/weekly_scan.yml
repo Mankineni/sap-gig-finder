@@ -1,0 +1,54 @@
+name: Weekly SAP Gig Scan
+
+on:
+  schedule:
+    - cron: "0 6 * * 4"   # Thursday 06:00 UTC
+    - cron: "0 6 * * 5"   # Friday   06:00 UTC
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (no file output)"
+        type: boolean
+        default: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write    # needed to commit gigs_latest.json back
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install chromium --with-deps
+
+      - name: Run pipeline
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RAPIDAPI_KEY:       ${{ secrets.RAPIDAPI_KEY }}
+        run: |
+          DRY=${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
+          python scheduler/run_pipeline.py $DRY
+
+      - name: Commit updated report
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/gigs_latest.json output/
+          git diff --staged --quiet || \
+            git commit -m "chore: gig report $(date -u +%Y-%m-%d)"
+          git push
