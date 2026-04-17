@@ -14,7 +14,9 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     permissions:
-      contents: write    # needed to commit gigs_latest.json back
+      contents: write
+      pages: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@v4
@@ -59,3 +61,14 @@ jobs:
             git commit -m "chore: gig report $(date -u +%Y-%m-%d)"
           git pull --rebase origin main
           git push
+
+      - name: Deploy to GitHub Pages
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/
+
+      - name: Publish Pages
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        id: deployment
+        uses: actions/deploy-pages@v4
