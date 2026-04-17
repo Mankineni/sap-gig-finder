@@ -57,4 +57,5 @@ jobs:
           git add docs/gigs_latest.json output/
           git diff --staged --quiet || \
             git commit -m "chore: gig report $(date -u +%Y-%m-%d)"
+          git pull --rebase origin main
           git push
