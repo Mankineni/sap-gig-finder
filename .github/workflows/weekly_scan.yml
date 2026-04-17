@@ -1,9 +1,8 @@
-name: Weekly SAP Gig Scan
+name: Daily SAP Gig Scan
 
 on:
   schedule:
-    - cron: "0 6 * * 4"   # Thursday 06:00 UTC
-    - cron: "0 6 * * 5"   # Friday   06:00 UTC
+    - cron: "0 4 * * *"   # Every day at 06:00 CET (04:00 UTC)
   workflow_dispatch:
     inputs:
       dry_run:
