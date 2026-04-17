@@ -3,7 +3,6 @@
 import asyncio
 from urllib.parse import quote_plus
 
-import feedparser
 from playwright.async_api import async_playwright
 from rich.console import Console
 
@@ -29,11 +28,7 @@ _RETRY_BACKOFF = 2  # seconds
 # ---------------------------------------------------------------------------
 
 async def _retry(coro_factory, label: str):
-    """Call *coro_factory()* up to _MAX_RETRIES times with exponential back-off.
-
-    *coro_factory* must be a zero-arg callable that returns a new awaitable
-    each time (so we can retry without reusing an exhausted coroutine).
-    """
+    """Call *coro_factory()* up to _MAX_RETRIES times with exponential back-off."""
     last_exc = None
     for attempt in range(1, _MAX_RETRIES + 1):
         try:
@@ -50,39 +45,63 @@ async def _retry(coro_factory, label: str):
 
 
 # ---------------------------------------------------------------------------
-# Source: Freelancermap (RSS)
+# Source: Freelancermap (Playwright — RSS no longer available)
 # ---------------------------------------------------------------------------
 
 async def scout_freelancermap(queue: asyncio.Queue, query: str) -> int:
-    """Fetch the Freelancermap RSS feed for *query* and enqueue RawListings."""
+    """Scrape Freelancermap project listings for *query* via Playwright."""
     label = f"freelancermap|{query[:30]}"
     encoded = quote_plus(query)
-    url = (
-        f"https://www.freelancermap.de/projektboerse.html"
-        f"?query={encoded}&remote=1&format=rss"
-    )
+    url = f"https://www.freelancermap.de/projektboerse.html?query={encoded}&remote=1"
 
-    def _parse():
-        """Synchronous feedparser call wrapped for the executor."""
-        return feedparser.parse(url)
+    async def _scrape():
+        async with async_playwright() as pw:
+            browser = await pw.chromium.launch(headless=True)
+            context = await browser.new_context(
+                user_agent=_USER_AGENT,
+                locale="de-DE",
+                extra_http_headers={"Accept-Language": "de-DE,de;q=0.9"},
+            )
+            page = await context.new_page()
+            await page.goto(url, wait_until="domcontentloaded", timeout=30_000)
+            await page.wait_for_timeout(5_000)
 
-    feed = await _retry(
-        lambda: asyncio.get_running_loop().run_in_executor(None, _parse),
-        label,
-    )
+            links = await page.query_selector_all('a[href*="/projekt/"]')
 
-    count = 0
-    for entry in feed.entries:
-        listing = RawListing(
-            title=entry.get("title", ""),
-            url=entry.get("link", ""),
-            raw_description=entry.get("summary", entry.get("description", "")),
-            source="freelancermap",
-        )
+            results: list[RawListing] = []
+            seen_hrefs: set[str] = set()
+
+            for link in links:
+                href = await link.get_attribute("href") or ""
+                if not href or href in seen_hrefs:
+                    continue
+
+                text = (await link.inner_text()).strip()
+                if len(text) < 10:
+                    continue
+
+                seen_hrefs.add(href)
+                full_url = f"https://www.freelancermap.de{href}" if href.startswith("/") else href
+
+                results.append(
+                    RawListing(
+                        title=text,
+                        url=full_url,
+                        raw_description="",
+                        source="freelancermap",
+                    )
+                )
+
+            await browser.close()
+            return results
+
+    listings = await _retry(_scrape, label)
+
+    for listing in listings:
         await queue.put(listing)
-        count += 1
 
-    return count
+    await asyncio.sleep(1)  # rate-limit between queries
+    return len(listings)
 
 
 # ---------------------------------------------------------------------------
@@ -106,34 +125,31 @@ async def scout_gulp(queue: asyncio.Queue, query: str) -> int:
             page = await context.new_page()
             await page.goto(url, wait_until="domcontentloaded", timeout=30_000)
 
-            # Wait for project cards to render (GULP uses various class names).
             try:
-                await page.wait_for_selector(
-                    "[class*='project-list-item'], [class*='ProjectList'], article",
-                    timeout=15_000,
-                )
+                await page.wait_for_selector(".card", timeout=15_000)
             except Exception:
-                # Page may have loaded but with zero results.
                 pass
 
-            cards = await page.query_selector_all(
-                "[class*='project-list-item'], [class*='ProjectList'] a, article"
-            )
+            await page.wait_for_timeout(3_000)
+            cards = await page.query_selector_all(".card")
 
             results: list[RawListing] = []
             for card in cards:
-                link_el = await card.query_selector("a[href]")
-                href = await link_el.get_attribute("href") if link_el else ""
+                link_el = await card.query_selector("a[href*=projekt]")
+                if not link_el:
+                    continue
+
+                href = await link_el.get_attribute("href") or ""
                 if href and not href.startswith("http"):
                     href = f"https://www.gulp.de{href}"
 
-                title_el = (
-                    await card.query_selector("h2, h3, [class*='title'], a")
+                title_el = await card.query_selector(
+                    "app-heading-tag, [class*='gp-title'], h2, h3"
                 )
                 title = (await title_el.inner_text()).strip() if title_el else ""
 
                 desc_el = await card.query_selector(
-                    "p, [class*='description'], [class*='snippet']"
+                    "[class*='description'], p, .text-truncate"
                 )
                 desc = (await desc_el.inner_text()).strip() if desc_el else ""
 
@@ -175,47 +191,44 @@ async def scout_eursap(queue: asyncio.Queue) -> int:
             )
             page = await context.new_page()
             await page.goto(
-                "https://eursap.eu/jobs/",
+                "https://eursap.eu/sap-jobs/",
                 wait_until="domcontentloaded",
                 timeout=30_000,
             )
+            await page.wait_for_timeout(5_000)
 
-            try:
-                await page.wait_for_selector(
-                    ".job_listing, article, [class*='job'], .listing",
-                    timeout=15_000,
-                )
-            except Exception:
-                pass
-
-            cards = await page.query_selector_all(
-                ".job_listing, article, [class*='job-item'], .listing"
-            )
+            links = await page.query_selector_all('a[href*="/jobs/sap"]')
 
             results: list[RawListing] = []
-            for card in cards:
-                link_el = await card.query_selector("a[href]")
-                href = await link_el.get_attribute("href") if link_el else ""
+            seen_hrefs: set[str] = set()
 
-                title_el = await card.query_selector(
-                    "h2, h3, h4, [class*='title'], a"
-                )
-                title = (await title_el.inner_text()).strip() if title_el else ""
+            for link in links:
+                href = await link.get_attribute("href") or ""
+                if not href or href in seen_hrefs:
+                    continue
 
-                desc_el = await card.query_selector(
-                    "p, [class*='description'], [class*='snippet'], .content"
-                )
-                desc = (await desc_el.inner_text()).strip() if desc_el else ""
+                text = (await link.inner_text()).strip()
+                # Clean up multiline text from the card
+                title_line = text.split("\n")[0].strip() if text else ""
+                # Extract description from the rest
+                desc = " ".join(text.split("\n")[1:]).strip() if "\n" in text else ""
 
-                if title:
-                    results.append(
-                        RawListing(
-                            title=title,
-                            url=href or "https://eursap.eu/jobs/",
-                            raw_description=desc,
-                            source="eursap",
-                        )
+                if not title_line or len(title_line) < 5:
+                    continue
+
+                # Remove "SAP JOB VACANCY:" prefix if present
+                if title_line.upper().startswith("SAP JOB VACANCY:"):
+                    title_line = title_line[len("SAP JOB VACANCY:"):].strip()
+
+                seen_hrefs.add(href)
+                results.append(
+                    RawListing(
+                        title=title_line,
+                        url=href,
+                        raw_description=desc,
+                        source="eursap",
                     )
+                )
 
             await browser.close()
             return results
