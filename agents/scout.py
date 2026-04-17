@@ -49,10 +49,14 @@ async def _retry(coro_factory, label: str):
 # ---------------------------------------------------------------------------
 
 async def scout_freelancermap(queue: asyncio.Queue, query: str) -> int:
-    """Scrape Freelancermap project listings for *query* via Playwright."""
+    """Scrape Freelancermap project listings for *query* via Playwright.
+
+    The listing page only shows titles, so we visit each project detail
+    page to grab the full description for better Claude scoring.
+    """
     label = f"freelancermap|{query[:30]}"
     encoded = quote_plus(query)
-    url = f"https://www.freelancermap.de/projektboerse.html?query={encoded}&remote=1"
+    url = f"https://www.freelancermap.de/projekte?query={encoded}"
 
     async def _scrape():
         async with async_playwright() as pw:
@@ -68,7 +72,8 @@ async def scout_freelancermap(queue: asyncio.Queue, query: str) -> int:
 
             links = await page.query_selector_all('a[href*="/projekt/"]')
 
-            results: list[RawListing] = []
+            # Collect unique hrefs + titles from listing page.
+            candidates: list[tuple[str, str]] = []
             seen_hrefs: set[str] = set()
 
             for link in links:
@@ -81,13 +86,40 @@ async def scout_freelancermap(queue: asyncio.Queue, query: str) -> int:
                     continue
 
                 seen_hrefs.add(href)
-                full_url = f"https://www.freelancermap.de{href}" if href.startswith("/") else href
+                full_url = (
+                    f"https://www.freelancermap.de{href}"
+                    if href.startswith("/")
+                    else href
+                )
+                candidates.append((full_url, text))
+
+            # Visit each detail page (up to 15) for the full description.
+            results: list[RawListing] = []
+            for project_url, title in candidates[:15]:
+                desc = ""
+                try:
+                    detail = await context.new_page()
+                    await detail.goto(
+                        project_url,
+                        wait_until="domcontentloaded",
+                        timeout=20_000,
+                    )
+                    await detail.wait_for_timeout(2_000)
+                    body = await detail.inner_text("main")
+                    # Extract text after "Beschreibung" heading if present.
+                    if "Beschreibung" in body:
+                        desc = body.split("Beschreibung", 1)[1].strip()[:1000]
+                    else:
+                        desc = body[:1000]
+                    await detail.close()
+                except Exception:
+                    pass  # Keep empty desc; title alone may suffice.
 
                 results.append(
                     RawListing(
-                        title=text,
-                        url=full_url,
-                        raw_description="",
+                        title=title,
+                        url=project_url,
+                        raw_description=desc,
                         source="freelancermap",
                     )
                 )
@@ -246,9 +278,75 @@ async def scout_eursap(queue: asyncio.Queue) -> int:
 # ---------------------------------------------------------------------------
 
 async def scout_linkedin(queue: asyncio.Queue, query: str) -> int:
-    """Placeholder — LinkedIn scraping requires RapidAPI integration."""
-    console.log("[dim]LinkedIn scout not yet implemented[/dim]")
-    return 0
+    """Scrape LinkedIn public job search (no login required)."""
+    label = f"linkedin|{query[:30]}"
+    encoded = quote_plus(query)
+    url = (
+        f"https://www.linkedin.com/jobs/search/"
+        f"?keywords={encoded}&location=Germany&f_TPR=r604800"
+    )
+
+    async def _scrape():
+        async with async_playwright() as pw:
+            browser = await pw.chromium.launch(headless=True)
+            context = await browser.new_context(
+                user_agent=_USER_AGENT,
+                locale="en-US",
+            )
+            page = await context.new_page()
+            await page.goto(url, wait_until="domcontentloaded", timeout=30_000)
+            await page.wait_for_timeout(5_000)
+
+            # Scroll down to load more results.
+            for _ in range(3):
+                await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                await page.wait_for_timeout(1_500)
+
+            cards = await page.query_selector_all(".base-card")
+
+            results: list[RawListing] = []
+            seen_hrefs: set[str] = set()
+
+            for card in cards:
+                link_el = await card.query_selector("a[href]")
+                if not link_el:
+                    continue
+
+                href = await link_el.get_attribute("href") or ""
+                # Strip tracking params from LinkedIn URLs.
+                clean_href = href.split("?")[0] if href else ""
+                if not clean_href or clean_href in seen_hrefs:
+                    continue
+                seen_hrefs.add(clean_href)
+
+                text = (await card.inner_text()).strip()
+                lines = [l.strip() for l in text.split("\n") if l.strip()]
+
+                title = lines[0] if lines else ""
+                # Lines typically: title, title (dup), company, location, date
+                company = lines[2] if len(lines) > 2 else ""
+                location = lines[3] if len(lines) > 3 else ""
+                desc = f"Company: {company}. Location: {location}."
+
+                if title and len(title) > 5:
+                    results.append(
+                        RawListing(
+                            title=title,
+                            url=clean_href,
+                            raw_description=desc,
+                            source="linkedin",
+                        )
+                    )
+
+            await browser.close()
+            return results
+
+    listings = await _retry(_scrape, label)
+
+    for listing in listings:
+        await queue.put(listing)
+
+    return len(listings)
 
 
 async def scout_upwork(queue: asyncio.Queue, query: str) -> int:
