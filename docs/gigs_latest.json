@@ -1,31 +1,10 @@
 [
   {
-    "title": "Data Engineer (m/w/d) mir Fokus auf SAC und SAP MM/BI/BW",
-    "url": "https://www.gulp.de/gulp2/g/projekte/agentur/C01267764",
-    "raw_description": "Für unseren Kunden aus der Elektrotechnik mit ca. 9000 Mitarbeitern suchen wir zu Anfang Mai einen Kennzahlenspezialisten (m/w/d) für SAP MM/BI/BW. Start: Mai 2026 Ende: Juni 2026 Idealerweise soll die Umsetzung binnen 3 Wochen erfolgen Einsatzort: Remote. Bei Bedarf Abstimmung vor Ort in Minden Kontingent: 60 Stunden Zur Weiterentwicklung und Professionalisierung des Reportings wird fachliche Unterstützung im Bereich Kennzahlen-Design und Dashboard-Erstellung benötigt. Der Fokus",
-    "source": "gulp",
-    "scraped_at": "2026-04-17T10:02:40.368903",
-    "workload_days": null,
-    "remote_pct": 90,
-    "is_agency": true,
-    "tech_stack": [
-      "SAC",
-      "SAP MM",
-      "SAP BI",
-      "BW"
-    ],
-    "score": 6,
-    "score_reason": "Good tech stack with SAC and BW (+3), high remote percentage (+2), but posted by agency (-1) and no modern AI/automation features mentioned.",
-    "status": "live",
-    "http_code": 200,
-    "verified_at": "2026-04-17T10:03:07.217768"
-  },
-  {
     "title": "Kennzahlen & Dashboard Design mit SAP Analytics Cloud (SAC) (m/w/d)",
     "url": "https://www.gulp.de/gulp2/g/projekte/extern/bf8d0e3a38b211f189e08e417b6a1e17",
     "raw_description": "Dashboards für Fachanwender und Management Dokumentation der umgesetzten Tätigkeiten / Kennzahlen Kennzahlen-Design und -Modellierung SAP Query Designer SAP Modul MM SAP BI / BW SAP Analytics Cloud (SAC) Remote remote",
     "source": "gulp",
-    "scraped_at": "2026-04-17T10:02:40.314297",
+    "scraped_at": "2026-04-17T10:40:44.196110",
     "workload_days": null,
     "remote_pct": 100,
     "is_agency": true,
@@ -38,17 +17,76 @@
       "SAP MM"
     ],
     "score": 8,
-    "score_reason": "High score due to SAC focus (+3), full remote (+2), and BI/BW stack (+1), though posted by agency (-1).",
+    "score_reason": "Strong score due to SAC focus (+3), fully remote (+2), and modern analytics stack, but agency posting reduces score slightly.",
     "status": "live",
     "http_code": 200,
-    "verified_at": "2026-04-17T10:03:07.429019"
+    "verified_at": "2026-04-17T10:40:53.327496"
+  },
+  {
+    "title": "Data Engineer (m/w/d) mir Fokus auf SAC und SAP MM/BI/BW",
+    "url": "https://www.gulp.de/gulp2/g/projekte/agentur/C01267764",
+    "raw_description": "Für unseren Kunden aus der Elektrotechnik mit ca. 9000 Mitarbeitern suchen wir zu Anfang Mai einen Kennzahlenspezialisten (m/w/d) für SAP MM/BI/BW. Start: Mai 2026 Ende: Juni 2026 Idealerweise soll die Umsetzung binnen 3 Wochen erfolgen Einsatzort: Remote. Bei Bedarf Abstimmung vor Ort in Minden Kontingent: 60 Stunden Zur Weiterentwicklung und Professionalisierung des Reportings wird fachliche Unterstützung im Bereich Kennzahlen-Design und Dashboard-Erstellung benötigt. Der Fokus",
+    "source": "gulp",
+    "scraped_at": "2026-04-17T10:40:44.253764",
+    "workload_days": null,
+    "remote_pct": 100,
+    "is_agency": true,
+    "tech_stack": [
+      "SAC",
+      "SAP MM",
+      "SAP BI",
+      "SAP BW"
+    ],
+    "score": 6,
+    "score_reason": "Good tech stack with SAC and BW, fully remote, but short 2-month duration and posted by agency limits appeal.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:40:53.606240"
+  },
+  {
+    "title": "(Senior) Consultant (m/w/d) Data Engineering SAP BW / SAP Datasphere",
+    "url": "https://de.linkedin.com/jobs/view/senior-consultant-m-w-d-data-engineering-sap-bw-sap-datasphere-at-windhoff-group-4399717384",
+    "raw_description": "Company: Windhoff Group. Location: Germany.",
+    "source": "linkedin",
+    "scraped_at": "2026-04-17T10:40:43.934526",
+    "workload_days": null,
+    "remote_pct": 50,
+    "is_agency": false,
+    "tech_stack": [
+      "SAP BW",
+      "SAP Datasphere"
+    ],
+    "score": 8,
+    "score_reason": "Strong modern tech stack with Datasphere and BW, direct client position, though workload and remote percentage details are limited.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:40:55.459063"
+  },
+  {
+    "title": "SAP Analytics Spezialistin (m/w/d) BW/4HANA & SAC",
+    "url": "https://de.linkedin.com/jobs/view/sap-analytics-spezialistin-m-w-d-bw-4hana-sac-at-geb%C3%A4udemanagement-schleswig-holstein-a%C3%B6r-gmsh-4402981243",
+    "raw_description": "Company: Gebäudemanagement Schleswig-Holstein AöR (GMSH). Location: Kiel, Schleswig-Holstein, Germany.",
+    "source": "linkedin",
+    "scraped_at": "2026-04-17T10:40:44.045681",
+    "workload_days": null,
+    "remote_pct": 0,
+    "is_agency": false,
+    "tech_stack": [
+      "BW/4HANA",
+      "SAC"
+    ],
+    "score": 7,
+    "score_reason": "Strong modern SAP analytics stack with BW/4HANA and SAC, direct client posting, but appears to be on-site position with no remote work mentioned.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:40:56.226998"
   },
   {
     "title": "Senior SAP IS-U Berater (m/w/d) / Querschnittsberater Transformation",
     "url": "https://www.gulp.de/gulp2/g/projekte/agentur/C01264617",
     "raw_description": "sowie deren Tracking. Praxis in Fit-to-Standard-Workshops, Gap-Analysen oder vergleichbaren Transformationsformaten. Grundverständnis moderner SAP-Themen wie SAP Datasphere, Analytics oder SAP Joule for Consultants / for Developers (ergänzend). Hannover remote Attraktive Möglichkeiten zur Verkürzung Ihres persönlichen Zahlungszieles Keine zeitraubende Rechnungserstellung mehr nötig Schnelle, zuverlässige Honorarzahlung Projektverträge mittels elektronischer Signatur abschließen C01264617 Frau Nathalie",
     "source": "gulp",
-    "scraped_at": "2026-04-17T10:02:40.466227",
+    "scraped_at": "2026-04-17T10:40:44.440600",
     "workload_days": null,
     "remote_pct": 100,
     "is_agency": true,
@@ -59,31 +97,333 @@
       "SAP Joule"
     ],
     "score": 8,
-    "score_reason": "High score due to modern SAP technologies including Datasphere and Analytics, full remote work, and AI-related Joule technology.",
+    "score_reason": "High score due to modern SAP tech stack including Datasphere, full remote work, and AI-related SAP Joule technology.",
     "status": "live",
     "http_code": 200,
-    "verified_at": "2026-04-17T10:03:08.389441"
+    "verified_at": "2026-04-17T10:40:56.447317"
   },
   {
     "title": "Inhouse Consultant SAP FI CO (m/w/d)",
     "url": "https://www.gulp.de/gulp2/g/projekte/agentur/C01255542",
     "raw_description": "strukturierte Arbeitsweise Wünschenswert: Sichere Kenntnisse und Erfahrungen im Customizing und der technischen Implementierung von SAP S/4HANA FI/CO. Kenntnisse in SAP BW und/oder SAP Analytics Cloud (SAC), um Finanz- und Controllingprozesse durch fundierte Datenanalysen optimal zu unterstützen oder auszubauen. Neuss remote Mit 25% Arbeitgeberzuschuss unterstützt der Kunde die Betriebliche Altersvorsorge überdurchschnittlich. Sonderkonditionen bei der Commerzbank und der Zuschuss zur Vermögensbildung",
     "source": "gulp",
-    "scraped_at": "2026-04-17T10:02:40.512094",
+    "scraped_at": "2026-04-17T10:40:44.498485",
     "workload_days": null,
     "remote_pct": 100,
     "is_agency": true,
     "tech_stack": [
       "SAP S/4HANA",
-      "SAP FI",
-      "SAP CO",
-      "SAP BW",
-      "SAP Analytics Cloud"
+      "FI",
+      "CO",
+      "BW",
+      "SAC"
     ],
     "score": 8,
-    "score_reason": "Strong score due to modern SAP stack including SAC and BW, full remote work, though points lost for being agency-posted.",
+    "score_reason": "High score due to modern tech stack including SAC and BW, full remote work, though posted by agency.",
     "status": "live",
     "http_code": 200,
-    "verified_at": "2026-04-17T10:03:10.269841"
+    "verified_at": "2026-04-17T10:40:56.568905"
+  },
+  {
+    "title": "Neu SAP Analytics Spezialistin (m/w/d) BW/4HANA & SAC Kiel Vollzeit; teilzeitfähig",
+    "url": "https://de.linkedin.com/jobs/view/neu%0Asap-analytics-spezialistin-m-w-d-bw-4hana-sac%0Akiel%0Avollzeit-teilzeitf%C3%A4hig-at-geb%C3%A4udemanagement-schleswig-holstein-a%C3%B6r-gmsh-4402913051",
+    "raw_description": "Company: Gebäudemanagement Schleswig-Holstein AöR (GMSH). Location: Kiel, Schleswig-Holstein, Germany.",
+    "source": "linkedin",
+    "scraped_at": "2026-04-17T10:40:44.182913",
+    "workload_days": null,
+    "remote_pct": 0,
+    "is_agency": false,
+    "tech_stack": [
+      "BW/4HANA",
+      "SAC"
+    ],
+    "score": 7,
+    "score_reason": "High score due to modern analytics stack (BW/4HANA and SAC) plus direct client posting.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:40:57.707579"
+  },
+  {
+    "title": "Senior Consultant SAP BW und SAC (m/w/d)",
+    "url": "https://de.linkedin.com/jobs/view/senior-consultant-sap-bw-und-sac-m-w-d-at-persona-service-4387961555",
+    "raw_description": "Company: persona service. Location: Laupheim, Baden-Württemberg, Germany.",
+    "source": "linkedin",
+    "scraped_at": "2026-04-17T10:40:45.274010",
+    "workload_days": null,
+    "remote_pct": 0,
+    "is_agency": true,
+    "tech_stack": [
+      "BW",
+      "SAC"
+    ],
+    "score": 6,
+    "score_reason": "Good tech stack with SAC but no remote work and posted by agency limits the score.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:41:16.039275"
+  },
+  {
+    "title": "Remote Inhouse SAP BW/SAC Berater(m/w/d)",
+    "url": "https://de.linkedin.com/jobs/view/remote-inhouse-sap-bw-sac-berater-m-w-d-at-apriori-business-solutions-ag-4399571544",
+    "raw_description": "Company: APRIORI - business solutions AG. Location: Germany.",
+    "source": "linkedin",
+    "scraped_at": "2026-04-17T10:40:45.597149",
+    "workload_days": null,
+    "remote_pct": 100,
+    "is_agency": false,
+    "tech_stack": [
+      "SAP BW",
+      "SAC"
+    ],
+    "score": 8,
+    "score_reason": "High score due to SAC in tech stack, full remote work, and direct client posting.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:41:20.734512"
+  },
+  {
+    "title": "Freelance - Senior SAP SAC / Datasphere Consultant",
+    "url": "https://de.linkedin.com/jobs/view/freelance-senior-sap-sac-datasphere-consultant-at-amicus-4401734369",
+    "raw_description": "Company: Amicus. Location: Germany.",
+    "source": "linkedin",
+    "scraped_at": "2026-04-17T10:40:46.630432",
+    "workload_days": null,
+    "remote_pct": 0,
+    "is_agency": true,
+    "tech_stack": [
+      "SAC",
+      "Datasphere"
+    ],
+    "score": 7,
+    "score_reason": "Strong tech stack with SAC and Datasphere but posted by agency with no remote/workload details specified.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:41:34.435253"
+  },
+  {
+    "title": "(Junior) Process Automation Consultant* (m/w/d) (SAP Cloud)",
+    "url": "https://de.linkedin.com/jobs/view/junior-process-automation-consultant-m-w-d-sap-cloud-at-sovanta-ag-4402996050",
+    "raw_description": "Company: sovanta AG. Location: Cologne, North Rhine-Westphalia, Germany.",
+    "source": "linkedin",
+    "scraped_at": "2026-04-17T10:40:45.172050",
+    "workload_days": null,
+    "remote_pct": 0,
+    "is_agency": false,
+    "tech_stack": [
+      "SAP Cloud",
+      "Process Automation"
+    ],
+    "score": 6,
+    "score_reason": "Gets +2 for automation focus and +1 for direct client, but lacks modern analytics stack and remote work options.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:41:44.161028"
+  },
+  {
+    "title": "SAP AI & BTP Enablement Consultant",
+    "url": "https://de.linkedin.com/jobs/view/sap-ai-btp-enablement-consultant-at-eurobase-people-4402969652",
+    "raw_description": "Company: Eurobase People. Location: Germany.",
+    "source": "linkedin",
+    "scraped_at": "2026-04-17T10:40:46.591747",
+    "workload_days": null,
+    "remote_pct": 80,
+    "is_agency": true,
+    "tech_stack": [
+      "SAP AI",
+      "BTP"
+    ],
+    "score": 7,
+    "score_reason": "Strong modern tech stack with SAP AI and BTP, high remote percentage, but loses points for being agency-posted and missing workload information.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:42:02.333471"
+  },
+  {
+    "title": "SAP S/4HANA Entwickler (m/w/d) mit FICO Expertise gesucht!",
+    "url": "https://www.freelancermap.de/projekt/sap-s-4hana-entwickler-m-w-d-mit-fico-expertise-gesucht",
+    "raw_description": "Aktuell bin ich auf der Suche nach einem freiberuflichen SAP S/4HANA Entwickler (m/w/d) mit FICO Expertise.\nKenntnisse:\nSAP S/4HANA Entwicklung\nABAP on Stack (S/4) \nFundierte Kenntnisse in FICO \nRAP\nClean Code \nRahmenparameter:\nStart: asap\nDauer: 3 Monate mit Option auf Verlängerung \nAuslastung: Vollzeit\nOrt: überwiegend Remote (sonst Hamburg)\nWenn du Interesse an dem Projekt hast, lass mir doch gerne deinen CV per Mail unter m.joens@corematch.de zukommen.\nVielen Dank im Voraus.\nBeste Grüße,\nMarvin Jöns\nEinloggen & bewerben.\nDas Bewerbungsformular ist nur für eingeloggte Nutzer verfügbar.\nRegistrieren\nAnmelden\nÄhnliche Projekte\nRandstad Professional GmbH (vorm. GULP)\nSAP S/4HANA Entwickler (m/w/d) – Fokus FI/CO & Clean Core\nHamburg, Deutschland\n100% Remote\nFreiberuflich\n3 Monate+\nab sofort\n16.04.2026\nRandstad Professional GmbH (vorm. GULP)\nSenior SAP S/4HANA Developer (m/w/d) – Fokus RAP & Clean Core\nhamburg, Deutschland\n100% Remote\nFreiberuflich\n3 Monate+\nab sofort\n16.04.2026\nRandstad",
+    "source": "freelancermap",
+    "scraped_at": "2026-04-17T10:40:53.115679",
+    "workload_days": 5,
+    "remote_pct": 90,
+    "is_agency": true,
+    "tech_stack": [
+      "SAP S/4HANA",
+      "ABAP",
+      "FICO",
+      "RAP"
+    ],
+    "score": 6,
+    "score_reason": "Strong S/4HANA and RAP stack with high remote percentage, but posted by agency and full-time workload.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:42:23.621411"
+  },
+  {
+    "title": "Project for SAP PPM, CATS, Fiori, ABAP - Berlin/Frankfurt, Germany (Hybrid - 1 day/week Onsite)",
+    "url": "https://www.freelancermap.de/projekt/project-for-sap-ppm-cats-fiori-abap-berlin-frankfurt-germany-hybrid-1-day-week-onsite-2953747",
+    "raw_description": "Hi,\nGreetings!!\n\n\nWe have an project opportunity for SAP PPM, CATS, Fiori, ABAP Consultant,\n\n\nPlease find the project details below: \nRole: SAP PPM, CATS, Fiori, ABAP Consultant\nAvailability :100%\nHiring Mode: Freelance contract for 1 year with extension \nLocation: Frankfurt or Berlin, Germany (Hybrid - 1 day/week onsite)\nLanguage: English & German (Must)\n\n\nOther details:\n• Extensive experience in the design and implementation of FIORI apps in the area of SAP PPM and SAP CATS\n• Very good knowledge of the programming language SAP ABAP and SAP ABAP objects.\n• Project experience in the context of the optimization of customer solutions in the area of SAP PPM / CATS and connected SAP systems\n• Strong communication skills\n• SAP authorizations, interfaces, extractors\n• Relevant experience with SAP PPM - S4 migration\n\n\nIf you are interested, please share your CV to subin.thomas@amm-group.comto discuss further\n\n\nEinloggen & bewerben.\nDas Bewerbungsformular ist nur für eingeloggte Nutzer verfügb",
+    "source": "freelancermap",
+    "scraped_at": "2026-04-17T10:41:18.384837",
+    "workload_days": 5,
+    "remote_pct": 80,
+    "is_agency": true,
+    "tech_stack": [
+      "SAP PPM",
+      "SAP CATS",
+      "Fiori",
+      "ABAP",
+      "ABAP Objects",
+      "S/4HANA"
+    ],
+    "score": 6,
+    "score_reason": "Good remote percentage and modern Fiori development, but limited by agency posting and lack of cutting-edge technologies like Datasphere or AI.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:42:29.784477"
+  },
+  {
+    "title": "ITP-827: Lead Cloud & Platform Architect (Energy & AI)",
+    "url": "https://www.freelancermap.de/projekt/itp-827-lead-cloud-und-platform-architect-energy-und-ai",
+    "raw_description": "Branche: Energiewirtschaft\nStart: 16.03.2026\nEnde: 31.12.2026\nAuslastung: 82%\nOffsite: 1224h\nOnsite: 136h\nReisezeit: 20h\nEinsatzort: Köln und remote (Onshore aus Deutschland)\nMax. Stundensatz remote: 96€/h\nWeitere Hinweise: Bei den Konditionen ist eine Differenz 18€/h von Onsite zum Offsite Stundensatz nötig. (Onsite +18€/h). Die geplante Aufteilung der Stunden ist wie genannt, kann aber abweichen.\n\n\nLeistungsumfang:\n\n\n With the introduction of a new customer and billing platform, EWI is not only pursuing the goal of the technical replacement of the existing SAP-IS-U backend, but also a strategic realignment of its IT and product landscape in order to actively exploit the growth opportunities in the German energy market in the context of the energy transition.\n The project aims to establish a modern, scalable and highly flexible backend platform that enables the efficient development, marketing and operation of new flex and dynamic energy products. These include, in particular, time-va",
+    "source": "freelancermap",
+    "scraped_at": "2026-04-17T10:40:46.292575",
+    "workload_days": 4,
+    "remote_pct": 90,
+    "is_agency": true,
+    "tech_stack": [
+      "SAP IS-U"
+    ],
+    "score": 6,
+    "score_reason": "High remote work percentage and moderate workload but lacks modern SAP stack and posted by agency.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:42:31.901373"
+  },
+  {
+    "title": "90% Remote: SAP Test Automation Engineer – ISTQB CTAL‑TM zertifiziert (m/w/d) in Frankfurt am Main",
+    "url": "https://www.freelancermap.de/projekt/90-prozent-remote-sap-test-automation-engineer-istqb-ctal-tm-zertifiziert-m-w-d-in-frankfurt-am-main",
+    "raw_description": "Für unseren Kunden suchen wir einen SAP Test Automation Engineer (m/w/d) in Remote, Vollzeit und vereinzelt in Frankfurt am Main.\n\n\nRahmenparameter:\nStart: 01.05.2026\nLaufzeit: 30.11.2026 + Option auf Verlängerung\nAuslastung: Vollzeit\nEinsatzort: Remote und vereinzelt in Frankfurt am Main\n\n\n\n\nAufgaben:\nFachliche Unterstützung bei Testkonzeption und den Vorbereitungen für Software-Qualitätssicherungsmaßnahmen im SAP-Umfeld auf Basis des SAP Solution Managers und Tricentis Tosca\nFachliche Unterstützung bei der Einführung, Umsetzung und Durchführung von Testmanagement und Testautomatisierung im SAP-Umfeld auf Basis des SAP Solution Managers und Tricentis Tosca\nDurchführung von manuellen oder automatisierten Tests zur Validierung der Softwarefunktionalität und Identifizierung von Defekten auf Basis von im SAP Solution Manager oder Tricentis Tosca definierten Testfällen\nAnalyse von Testergebnissen und Identifizierung von Defekten und Verfolgung dieser bis zur Behebung via SAP Solution Manag",
+    "source": "freelancermap",
+    "scraped_at": "2026-04-17T10:41:08.342376",
+    "workload_days": 5,
+    "remote_pct": 90,
+    "is_agency": true,
+    "tech_stack": [
+      "SAP Solution Manager",
+      "Tricentis Tosca"
+    ],
+    "score": 6,
+    "score_reason": "Good remote percentage and automation focus, but older SAP tech stack and agency posting limits score.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:42:37.634036"
+  },
+  {
+    "title": "SAP BTP Architekt (m/w/d) – ca. 18 Monate – 50 % vor Ort in München – Start ASAP",
+    "url": "https://www.freelancermap.de/projekt/sap-btp-architekt-m-w-d-ca-18-monate-50-prozent-vor-ort-in-muenchen-start-asap",
+    "raw_description": "Für unseren Kunden suchen wir aktuell einen erfahrenen Data Plattform Architekten (m/w/d) für den Aufbau einer neuen, zukunftsfähigen Data- und Reporting-Plattform im S/4-Umfeld. \n\n\nIhre Aufgaben:\nKonzeption einer modernen Daten- und Reporting-Zielarchitektur (Greenfield) \nDefinition der Gesamtarchitektur auf Basis von SAP BTP \nArchitekturdesign für Datenintegration, Datenflüsse und Datenmodelle \nSteuerung und Bewertung technologischer Entscheidungen (SAP vs. Databricks) \nSicherstellung eines optimalen Zusammenspiels zwischen SAP-Plattform und Databricks \nEnge Abstimmung mit Projektleitung und Fachbereichen \nBeratung bei der strategischen Ausrichtung der Plattform \nTechnische Führung des Umsetzungsteams \n\n\nIhr Profil:\nFundierte Erfahrung als Data / Cloud Architekt \nSehr gute Kenntnisse in SAP BTP \nErfahrung mit SAP Datasphere und SAP Analytics Cloud \nSehr gutes Verständnis moderner Datenarchitekturen (Cloud, Data Platforms) \nErfahrung im Zusammenspiel von SAP und Databricks \nStarke kon",
+    "source": "freelancermap",
+    "scraped_at": "2026-04-17T10:41:25.859555",
+    "workload_days": null,
+    "remote_pct": 50,
+    "is_agency": true,
+    "tech_stack": [
+      "SAP BTP",
+      "SAP Datasphere",
+      "SAP Analytics Cloud",
+      "S/4HANA",
+      "Databricks"
+    ],
+    "score": 8,
+    "score_reason": "High-scoring project with Datasphere and SAC in tech stack, plus modern data architecture focus, but limited by agency posting and 50% remote.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:42:45.371098"
+  },
+  {
+    "title": "Kennzahlen & Dashboard Design mit SAP Analytics Cloud (SAC) (m/w/d)",
+    "url": "https://www.freelancermap.de/projekt/kennzahlen-und-dashboard-design-mit-sap-analytics-cloud-sac-m-w-d",
+    "raw_description": "Aufgaben:\n\n              Aktuell sind wir für einen unserer Kunden auf der Suche nach einem Experten im Bereich Kennzahlen-Design und Dashboard-Erstellung.\n\n\n\nZu Ihren Aufgaben gehören:\n\n- Analyse und Aufbereitung von Materialkostenveränderungen\n\n- Berücksichtigung und Trennung von Preis- und Volumeneffekten sowie Währungskurseffekten\n\n- Ableitung, Definition und Strukturierung aussagekräftiger Kennzahlen\n\n- Konzeption, Design und technische Umsetzung von Dashboards für Fachanwender und Management\n\n - Dokumentation der umgesetzten Tätigkeiten / Kennzahlen\n            \n\nProjekt-Nr.:\n105411\n\nProjekttitel:\nKennzahlen & Dashboard Design mit SAP Analytics Cloud (SAC) (m/w/d)\n\nStellentyp:\nfreiberuflich\n\nEinsatzort:\nRemote\n\nStarttermin:\n01.05.2026\n\nDauer:\nVolumen von 60 Stunden\n\nAnforderungen:\n\n              - Kennzahlen-Design und -Modellierung\n\n- SAP Query Designer \n\n- SAP Modul MM \n\n- SAP BI / BW \n\n- SAP Analytics Cloud (SAC) \n\no Entwicklung von Stories und Dashboards\n\no Anbindung an SAP B",
+    "source": "freelancermap",
+    "scraped_at": "2026-04-17T10:41:31.541932",
+    "workload_days": null,
+    "remote_pct": 100,
+    "is_agency": true,
+    "tech_stack": [
+      "SAC",
+      "SAP Analytics Cloud",
+      "SAP BI",
+      "SAP BW",
+      "SAP Query Designer",
+      "SAP MM"
+    ],
+    "score": 8,
+    "score_reason": "High score due to SAC focus (+3), full remote (+2), and modern analytics stack, but posted by agency.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:42:46.161019"
+  },
+  {
+    "title": "836-AB: Senior Data Engineer im SAP-Umfeld (SQLScript / HANA / BW4HANA) (m/w/d)",
+    "url": "https://www.freelancermap.de/projekt/836-ab-senior-data-engineer-im-sap-umfeld-sqlscript-hana-bw4hana-m-w-d",
+    "raw_description": "+++ Bewerbungen bitte nur an projektbewerbung@sps-cs.de +++\n\n\nProjektstart: April 2026\nProjektende: Dezember 2027, Option auf Verlängerung\n\n\nWir suchen einen Senior Entwickler zur Unterstützung eines Instandhaltungsprojekts im Infrastrukturbereich. In dieser Rolle begleiten Sie die Implementierung technischer Komponenten, beraten im Architekturkontext und unterstützen die Migration von SAP BW on Hana nach BW4HANA unter Einsatz moderner Webtechnologien und SAP-Architekturen.\n\n\nAufgabenbeschreibung\nImplementierung technischer Komponenten in Applikationen auf Basis der Technologie SAP SAPR/3, SAP BW4HANA, JavaScript, ABAP, SQLScript und SAP HANA-native Architektur\nfachliche Unterstützung bei der Vorbereitung und Durchführung bei der Migration von SAP BW on Hana -> SAP BW4HANA\nFachliche Unterstützung und Beratung im Architekturkontext\nErstellung von IT-Konzepten im Projektkontext\nFachliche Unterstützung von Anforderungsworkshops mit Fach- und IT-Bereichen der internen Partner\nAufwandsschät",
+    "source": "freelancermap",
+    "scraped_at": "2026-04-17T10:41:34.581211",
+    "workload_days": null,
+    "remote_pct": 0,
+    "is_agency": true,
+    "tech_stack": [
+      "BW/4HANA",
+      "SAP HANA",
+      "SQLScript",
+      "ABAP",
+      "JavaScript",
+      "SAP R/3"
+    ],
+    "score": 6,
+    "score_reason": "Strong modern SAP stack with BW/4HANA (+3) but agency posting and no remote work mentioned, limiting overall appeal.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:42:48.020681"
+  },
+  {
+    "title": "Senior SAP BW/4HANA Consultant / Developer (m/w/d), remote",
+    "url": "https://www.freelancermap.de/projekt/senior-sap-bw-4hana-consultant-developer-m-w-d-remote",
+    "raw_description": "Senior SAP BW/4HANA Consultant / Developer (m/w/d), remote\nProjektstart: 01.06.2026\n Projektende: 31.12.2026\n Auslastung: Vollzeit\n Vertragsart: Arbeitnehmerüberlassung (ANÜ)\n Einsatzort: 100% Remote, optionale Vor-Ort-Termine in Köln (Teamtreffen aktuell mittwochs)\nProjektbeschreibung\nFür ein laufendes Projekt im Bereich Vertriebscontrolling unseres Kunden suchen wir einen erfahrenen Senior SAP BW/4HANA Consultant bzw. Developer (m/w/d). Ziel ist die Übernahme und Weiterführung von Entwicklungsthemen im Backend-Bereich von SAP BW/4HANA, einschließlich vorbereitender Business-Analyse-Tätigkeiten.\nAufgaben\nWeiterentwicklung und Implementierung der bestehenden Datenbasis in SAP BW/4HANA\nZusammenarbeit im agilen Kanban-Team mit IT und Fachbereichen\nAnalyse fachlicher Anforderungen und technische Umsetzung im DWH-Umfeld\nSicherstellung der Datenbereitstellung für ein nachgelagertes SAS-DWH (Schnittstellen-Design, -Validierung, -Testing)\nDurchführung von Entwickler-Tests, Dokumentation sowie",
+    "source": "freelancermap",
+    "scraped_at": "2026-04-17T10:41:43.706651",
+    "workload_days": 5,
+    "remote_pct": 100,
+    "is_agency": true,
+    "tech_stack": [
+      "BW/4HANA"
+    ],
+    "score": 8,
+    "score_reason": "High score due to BW/4HANA tech stack (+3), full remote work (+2), and agile development environment, but loses points for agency posting.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:42:49.889799"
+  },
+  {
+    "title": "Senior SAP SAC / Datasphere Consultant (German Based)",
+    "url": "https://www.freelancermap.de/projekt/senior-sap-sac-datasphere-consultant-german-based",
+    "raw_description": "We have a new freelance opportunity to support a German SAP Consultancy for an SAP SAC / Datasphere Consultant to join a greenfield customer project in Germany.\n\n\nRole: SAP SAC / Datasphere Consultant\nProject Duration: Initial 12 Months (Extension possible)\nLocation: Remote with occasional on-site near Dusseldorf, Germany\nStart Date: ASAP\nLanguage: English required (German a plus)\nWorkload: Minimum 2 days a week required (Ideally more)\n\n\nKey Responsibilities:\n• Design and develop analytics solutions using SAP Analytics Cloud (SAC) for reporting and/or planning scenarios.\n• Build and optimize data models and data flows within SAP Datasphere (formerly SAP Data Warehouse Cloud).\n• Integrate SAP and non-SAP data sources using SAP BTP / Integration tools where required.\n• Collaborate with business stakeholders to translate requirements into scalable reporting and planning solutions.\n• Support end-to-end delivery including design, development, testing, and deployment.\n• Ensure best practices",
+    "source": "freelancermap",
+    "scraped_at": "2026-04-17T10:41:49.337756",
+    "workload_days": 2,
+    "remote_pct": 85,
+    "is_agency": true,
+    "tech_stack": [
+      "SAP Analytics Cloud",
+      "SAC",
+      "Datasphere",
+      "SAP BTP"
+    ],
+    "score": 10,
+    "score_reason": "Perfect match with high-demand Datasphere and SAC stack, flexible remote work, low minimum workload, and 12-month greenfield project.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:42:51.050637"
   }
 ]
