@@ -48,7 +48,7 @@ jobs:
           RAPIDAPI_KEY:       ${{ secrets.RAPIDAPI_KEY }}
         run: |
           DRY=${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
-          python scheduler/run_pipeline.py $DRY
+          python -m scheduler.run_pipeline $DRY
 
       - name: Commit updated report
         if: ${{ github.event.inputs.dry_run != 'true' }}
