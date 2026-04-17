@@ -1,28 +1,31 @@
 [
   {
-    "title": "100% Remote: SAP BRIM / Settlement Management Consultant (m/w/d) English speaking, 25% Capacity",
-    "url": "https://www.freelancermap.de/projekt/100-prozent-remote-sap-brim-settlement-management-consultant-m-w-d-english-speaking-25-prozent-capacity",
-    "raw_description": "",
-    "source": "freelancermap",
-    "scraped_at": "2026-04-17T09:53:37.722618",
-    "workload_days": 1,
-    "remote_pct": 100,
+    "title": "Data Engineer (m/w/d) mir Fokus auf SAC und SAP MM/BI/BW",
+    "url": "https://www.gulp.de/gulp2/g/projekte/agentur/C01267764",
+    "raw_description": "Für unseren Kunden aus der Elektrotechnik mit ca. 9000 Mitarbeitern suchen wir zu Anfang Mai einen Kennzahlenspezialisten (m/w/d) für SAP MM/BI/BW. Start: Mai 2026 Ende: Juni 2026 Idealerweise soll die Umsetzung binnen 3 Wochen erfolgen Einsatzort: Remote. Bei Bedarf Abstimmung vor Ort in Minden Kontingent: 60 Stunden Zur Weiterentwicklung und Professionalisierung des Reportings wird fachliche Unterstützung im Bereich Kennzahlen-Design und Dashboard-Erstellung benötigt. Der Fokus",
+    "source": "gulp",
+    "scraped_at": "2026-04-17T10:02:40.368903",
+    "workload_days": null,
+    "remote_pct": 90,
     "is_agency": true,
     "tech_stack": [
-      "SAP BRIM"
+      "SAC",
+      "SAP MM",
+      "SAP BI",
+      "BW"
     ],
-    "score": 7,
-    "score_reason": "High score due to 100% remote work and very low workload commitment (25% capacity), though limited by specialized BRIM focus without modern analytics stack.",
+    "score": 6,
+    "score_reason": "Good tech stack with SAC and BW (+3), high remote percentage (+2), but posted by agency (-1) and no modern AI/automation features mentioned.",
     "status": "live",
     "http_code": 200,
-    "verified_at": "2026-04-17T09:54:01.176729"
+    "verified_at": "2026-04-17T10:03:07.217768"
   },
   {
     "title": "Kennzahlen & Dashboard Design mit SAP Analytics Cloud (SAC) (m/w/d)",
     "url": "https://www.gulp.de/gulp2/g/projekte/extern/bf8d0e3a38b211f189e08e417b6a1e17",
     "raw_description": "Dashboards für Fachanwender und Management Dokumentation der umgesetzten Tätigkeiten / Kennzahlen Kennzahlen-Design und -Modellierung SAP Query Designer SAP Modul MM SAP BI / BW SAP Analytics Cloud (SAC) Remote remote",
     "source": "gulp",
-    "scraped_at": "2026-04-17T09:53:37.575646",
+    "scraped_at": "2026-04-17T10:02:40.314297",
     "workload_days": null,
     "remote_pct": 100,
     "is_agency": true,
@@ -35,61 +38,17 @@
       "SAP MM"
     ],
     "score": 8,
-    "score_reason": "High score due to SAC focus (+3), full remote (+2), and modern analytics stack, but loses points for being agency-posted.",
+    "score_reason": "High score due to SAC focus (+3), full remote (+2), and BI/BW stack (+1), though posted by agency (-1).",
     "status": "live",
     "http_code": 200,
-    "verified_at": "2026-04-17T09:54:05.237961"
-  },
-  {
-    "title": "Data Engineer (m/w/d) mir Fokus auf SAC und SAP MM/BI/BW",
-    "url": "https://www.gulp.de/gulp2/g/projekte/agentur/C01267764",
-    "raw_description": "Für unseren Kunden aus der Elektrotechnik mit ca. 9000 Mitarbeitern suchen wir zu Anfang Mai einen Kennzahlenspezialisten (m/w/d) für SAP MM/BI/BW. Start: Mai 2026 Ende: Juni 2026 Idealerweise soll die Umsetzung binnen 3 Wochen erfolgen Einsatzort: Remote. Bei Bedarf Abstimmung vor Ort in Minden Kontingent: 60 Stunden Zur Weiterentwicklung und Professionalisierung des Reportings wird fachliche Unterstützung im Bereich Kennzahlen-Design und Dashboard-Erstellung benötigt. Der Fokus",
-    "source": "gulp",
-    "scraped_at": "2026-04-17T09:53:37.691725",
-    "workload_days": null,
-    "remote_pct": 90,
-    "is_agency": true,
-    "tech_stack": [
-      "SAC",
-      "SAP MM",
-      "SAP BI",
-      "SAP BW"
-    ],
-    "score": 6,
-    "score_reason": "Strong tech stack with SAC and BW (+3), high remote work (+2), but agency posting (+0) and limited project duration.",
-    "status": "live",
-    "http_code": 200,
-    "verified_at": "2026-04-17T09:54:05.327614"
-  },
-  {
-    "title": "Inhouse Consultant SAP FI CO (m/w/d)",
-    "url": "https://www.gulp.de/gulp2/g/projekte/agentur/C01255542",
-    "raw_description": "strukturierte Arbeitsweise Wünschenswert: Sichere Kenntnisse und Erfahrungen im Customizing und der technischen Implementierung von SAP S/4HANA FI/CO. Kenntnisse in SAP BW und/oder SAP Analytics Cloud (SAC), um Finanz- und Controllingprozesse durch fundierte Datenanalysen optimal zu unterstützen oder auszubauen. Neuss remote Mit 25% Arbeitgeberzuschuss unterstützt der Kunde die Betriebliche Altersvorsorge überdurchschnittlich. Sonderkonditionen bei der Commerzbank und der Zuschuss zur Vermögensbildung",
-    "source": "gulp",
-    "scraped_at": "2026-04-17T09:53:37.961610",
-    "workload_days": null,
-    "remote_pct": 100,
-    "is_agency": true,
-    "tech_stack": [
-      "SAP S/4HANA",
-      "FI",
-      "CO",
-      "SAP BW",
-      "SAP Analytics Cloud",
-      "SAC"
-    ],
-    "score": 8,
-    "score_reason": "Strong score due to modern SAP stack including SAC and BW, fully remote work, though points lost for being agency-posted.",
-    "status": "live",
-    "http_code": 200,
-    "verified_at": "2026-04-17T09:54:08.003216"
+    "verified_at": "2026-04-17T10:03:07.429019"
   },
   {
     "title": "Senior SAP IS-U Berater (m/w/d) / Querschnittsberater Transformation",
     "url": "https://www.gulp.de/gulp2/g/projekte/agentur/C01264617",
     "raw_description": "sowie deren Tracking. Praxis in Fit-to-Standard-Workshops, Gap-Analysen oder vergleichbaren Transformationsformaten. Grundverständnis moderner SAP-Themen wie SAP Datasphere, Analytics oder SAP Joule for Consultants / for Developers (ergänzend). Hannover remote Attraktive Möglichkeiten zur Verkürzung Ihres persönlichen Zahlungszieles Keine zeitraubende Rechnungserstellung mehr nötig Schnelle, zuverlässige Honorarzahlung Projektverträge mittels elektronischer Signatur abschließen C01264617 Frau Nathalie",
     "source": "gulp",
-    "scraped_at": "2026-04-17T09:53:37.902100",
+    "scraped_at": "2026-04-17T10:02:40.466227",
     "workload_days": null,
     "remote_pct": 100,
     "is_agency": true,
@@ -100,9 +59,31 @@
       "SAP Joule"
     ],
     "score": 8,
-    "score_reason": "High score due to modern SAP stack including Datasphere, full remote work, and AI-related SAP Joule technology.",
+    "score_reason": "High score due to modern SAP technologies including Datasphere and Analytics, full remote work, and AI-related Joule technology.",
     "status": "live",
     "http_code": 200,
-    "verified_at": "2026-04-17T09:54:08.361518"
+    "verified_at": "2026-04-17T10:03:08.389441"
+  },
+  {
+    "title": "Inhouse Consultant SAP FI CO (m/w/d)",
+    "url": "https://www.gulp.de/gulp2/g/projekte/agentur/C01255542",
+    "raw_description": "strukturierte Arbeitsweise Wünschenswert: Sichere Kenntnisse und Erfahrungen im Customizing und der technischen Implementierung von SAP S/4HANA FI/CO. Kenntnisse in SAP BW und/oder SAP Analytics Cloud (SAC), um Finanz- und Controllingprozesse durch fundierte Datenanalysen optimal zu unterstützen oder auszubauen. Neuss remote Mit 25% Arbeitgeberzuschuss unterstützt der Kunde die Betriebliche Altersvorsorge überdurchschnittlich. Sonderkonditionen bei der Commerzbank und der Zuschuss zur Vermögensbildung",
+    "source": "gulp",
+    "scraped_at": "2026-04-17T10:02:40.512094",
+    "workload_days": null,
+    "remote_pct": 100,
+    "is_agency": true,
+    "tech_stack": [
+      "SAP S/4HANA",
+      "SAP FI",
+      "SAP CO",
+      "SAP BW",
+      "SAP Analytics Cloud"
+    ],
+    "score": 8,
+    "score_reason": "Strong score due to modern SAP stack including SAC and BW, full remote work, though points lost for being agency-posted.",
+    "status": "live",
+    "http_code": 200,
+    "verified_at": "2026-04-17T10:03:10.269841"
   }
 ]
