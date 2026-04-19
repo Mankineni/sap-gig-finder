@@ -4,3 +4,4 @@ __pycache__
 output/*.json
 output/*.md
 !output/.gitkeep
+debug/

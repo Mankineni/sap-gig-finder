@@ -1,6 +1,9 @@
 """Agent A — Scout: parallel workers that scrape sources and push RawListings into a queue."""
 
 import asyncio
+import re
+import traceback
+from pathlib import Path
 from urllib.parse import quote_plus
 
 from playwright.async_api import async_playwright
@@ -22,10 +25,47 @@ _USER_AGENT = (
 _MAX_RETRIES = 3
 _RETRY_BACKOFF = 2  # seconds
 
+_DEBUG_DIR = Path("debug")
+
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+def _slug(label: str) -> str:
+    return re.sub(r"[^A-Za-z0-9._-]+", "_", label).strip("_") or "scout"
+
+
+async def _save_debug(page, label: str) -> None:
+    """Dump current page HTML + screenshot + URL for post-mortem analysis."""
+    try:
+        _DEBUG_DIR.mkdir(parents=True, exist_ok=True)
+        slug = _slug(label)
+        html_path = _DEBUG_DIR / f"{slug}.html"
+        png_path = _DEBUG_DIR / f"{slug}.png"
+        meta_path = _DEBUG_DIR / f"{slug}.txt"
+
+        try:
+            html = await page.content()
+        except Exception as exc:
+            html = f"<!-- page.content() failed: {exc} -->"
+        html_path.write_text(html, encoding="utf-8", errors="replace")
+
+        try:
+            await page.screenshot(path=str(png_path), full_page=True)
+        except Exception as exc:
+            console.log(f"[yellow]\\[{label}] screenshot failed: {exc}")
+
+        try:
+            meta = f"url={page.url}\ntitle={await page.title()}\n"
+        except Exception as exc:
+            meta = f"meta capture failed: {exc}\n"
+        meta_path.write_text(meta, encoding="utf-8", errors="replace")
+
+        console.log(f"[cyan]\\[{label}] debug artifacts written to {html_path.parent}/")
+    except Exception as exc:
+        console.log(f"[red]\\[{label}] _save_debug itself failed: {exc}")
+
 
 async def _retry(coro_factory, label: str):
     """Call *coro_factory()* up to _MAX_RETRIES times with exponential back-off."""
@@ -38,6 +78,7 @@ async def _retry(coro_factory, label: str):
             console.log(
                 f"[yellow]\\[{label}] attempt {attempt}/{_MAX_RETRIES} failed: {exc}"
             )
+            console.log(f"[dim]{traceback.format_exc()}[/dim]")
             if attempt < _MAX_RETRIES:
                 await asyncio.sleep(_RETRY_BACKOFF * attempt)
     console.log(f"[red]\\[{label}] all {_MAX_RETRIES} attempts exhausted")
@@ -71,6 +112,7 @@ async def scout_freelancermap(queue: asyncio.Queue, query: str) -> int:
             await page.wait_for_timeout(5_000)
 
             links = await page.query_selector_all('a[href*="/projekt/"]')
+            console.log(f"[dim]\\[{label}] matched {len(links)} /projekt/ links")
 
             # Collect unique hrefs + titles from listing page.
             candidates: list[tuple[str, str]] = []
@@ -92,6 +134,9 @@ async def scout_freelancermap(queue: asyncio.Queue, query: str) -> int:
                     else href
                 )
                 candidates.append((full_url, text))
+
+            if not candidates:
+                await _save_debug(page, label)
 
             # Visit each detail page (up to 15) for the full description.
             results: list[RawListing] = []
@@ -164,6 +209,7 @@ async def scout_gulp(queue: asyncio.Queue, query: str) -> int:
 
             await page.wait_for_timeout(3_000)
             cards = await page.query_selector_all(".card")
+            console.log(f"[dim]\\[{label}] matched {len(cards)} .card nodes")
 
             results: list[RawListing] = []
             for card in cards:
@@ -194,6 +240,9 @@ async def scout_gulp(queue: asyncio.Queue, query: str) -> int:
                             source="gulp",
                         )
                     )
+
+            if not results:
+                await _save_debug(page, label)
 
             await browser.close()
             return results
@@ -230,6 +279,7 @@ async def scout_eursap(queue: asyncio.Queue) -> int:
             await page.wait_for_timeout(5_000)
 
             links = await page.query_selector_all('a[href*="/jobs/sap"]')
+            console.log(f"[dim]\\[{label}] matched {len(links)} /jobs/sap links")
 
             results: list[RawListing] = []
             seen_hrefs: set[str] = set()
@@ -261,6 +311,9 @@ async def scout_eursap(queue: asyncio.Queue) -> int:
                         source="eursap",
                     )
                 )
+
+            if not results:
+                await _save_debug(page, label)
 
             await browser.close()
             return results
@@ -303,6 +356,7 @@ async def scout_linkedin(queue: asyncio.Queue, query: str) -> int:
                 await page.wait_for_timeout(1_500)
 
             cards = await page.query_selector_all(".base-card")
+            console.log(f"[dim]\\[{label}] matched {len(cards)} .base-card nodes")
 
             results: list[RawListing] = []
             seen_hrefs: set[str] = set()
@@ -337,6 +391,9 @@ async def scout_linkedin(queue: asyncio.Queue, query: str) -> int:
                             source="linkedin",
                         )
                     )
+
+            if not results:
+                await _save_debug(page, label)
 
             await browser.close()
             return results
@@ -376,6 +433,7 @@ async def run_scouts(queue: asyncio.Queue) -> dict:
             return name, n
         except Exception as exc:
             console.log(f"[red]\\[{name}] failed permanently: {exc}")
+            console.log(f"[dim]{traceback.format_exc()}[/dim]")
             return name, 0
 
     tasks = []

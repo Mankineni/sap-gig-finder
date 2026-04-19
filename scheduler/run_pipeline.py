@@ -97,6 +97,15 @@ async def pipeline(dry_run: bool = False):
         for r in results[:5]:
             console.print(f"  [{r.score}] {r.title} — {r.source}")
 
+    if stats["raw_count"] == 0:
+        console.print(
+            "[red]Pipeline produced 0 raw listings — every scout returned empty.[/red]"
+        )
+        console.print(
+            "[red]Check debug/ artifacts for per-source page dumps.[/red]"
+        )
+        raise SystemExit(2)
+
 
 def main():
     parser = argparse.ArgumentParser(
