@@ -82,6 +82,10 @@
     }
     .shell.collapsed { grid-template-columns: var(--sidebar-collapsed) 1fr; }
 
+    /* Mobile-only overlay backdrop — hidden on desktop so it doesn't
+       occupy a grid track and push the sidebar into the wrong column. */
+    .mobile-backdrop { display: none; }
+
     /* ─── Sidebar ────────────────────────────────────────────────── */
     .sidebar {
       background: var(--color-sidebar-bg);
@@ -434,7 +438,6 @@
       .shell.mobile-open .sidebar { transform: translateX(0); }
 
       .mobile-backdrop {
-        display: none;
         position: fixed;
         inset: 0;
         background: rgba(0, 0, 0, 0.4);
