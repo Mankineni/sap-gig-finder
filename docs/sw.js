@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gig-radar-v2';
+const CACHE_NAME = 'gig-radar-v3';
 const APP_SHELL  = ['/', '/index.html', '/manifest.json'];
 const DATA_FILE  = '/gigs_latest.json';
 
