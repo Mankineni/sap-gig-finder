@@ -659,9 +659,14 @@
     const directBadge = listing.is_agency === false
       ? '<span class="pill pill-direct">Direct client</span>' : "";
 
-    const dateInfo = formatRelativeDate(listing.scraped_at || listing.verified_at);
+    const usePosted = !!listing.posted_at;
+    const dateInfo = formatRelativeDate(listing.posted_at || listing.scraped_at || listing.verified_at);
+    const prefix = usePosted ? "Posted" : "Found";
+    const tooltip = usePosted
+      ? "Posted: " + dateInfo.full
+      : "Scrape timestamp (real posting date unavailable): " + dateInfo.full;
     const dateHtml = dateInfo.short
-      ? '<span class="card-date" title="Found: ' + escapeHtml(dateInfo.full) + '">Found ' + escapeHtml(dateInfo.short) + '</span>'
+      ? '<span class="card-date" title="' + escapeHtml(tooltip) + '">' + prefix + ' ' + escapeHtml(dateInfo.short) + '</span>'
       : '';
 
     return '<div class="card">' +

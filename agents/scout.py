@@ -3,7 +3,9 @@
 import asyncio
 import re
 import traceback
+from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Optional
 from urllib.parse import quote_plus
 
 from playwright.async_api import async_playwright
@@ -86,6 +88,103 @@ async def _retry(coro_factory, label: str):
 
 
 # ---------------------------------------------------------------------------
+# Posting-date extraction
+# ---------------------------------------------------------------------------
+
+_DE_MONTHS = {
+    "januar": 1, "jan": 1, "februar": 2, "feb": 2, "märz": 3, "maerz": 3, "mar": 3,
+    "april": 4, "apr": 4, "mai": 5, "juni": 6, "jun": 6, "juli": 7, "jul": 7,
+    "august": 8, "aug": 8, "september": 9, "sep": 9, "sept": 9, "oktober": 10, "okt": 10,
+    "november": 11, "nov": 11, "dezember": 12, "dez": 12,
+}
+_EN_MONTHS = {
+    "january": 1, "jan": 1, "february": 2, "feb": 2, "march": 3, "mar": 3,
+    "april": 4, "apr": 4, "may": 5, "june": 6, "jun": 6, "july": 7, "jul": 7,
+    "august": 8, "aug": 8, "september": 9, "sep": 9, "sept": 9, "october": 10, "oct": 10,
+    "november": 11, "nov": 11, "december": 12, "dec": 12,
+}
+
+
+def _parse_posting_date(text: str, now: Optional[datetime] = None) -> Optional[datetime]:
+    """Best-effort extraction of a listing's posting date from raw page text.
+
+    Strategy: collect candidate dates from multiple patterns (German/English
+    absolute + relative), keep only those in the past 180 days, and return
+    the most recent. This avoids false positives from project start dates
+    (which are typically in the future) and from prose-date mentions.
+    """
+    if not text:
+        return None
+    now = now or datetime.utcnow()
+    cutoff = now - timedelta(days=180)
+    candidates: list[datetime] = []
+
+    def _accept(dt: datetime) -> None:
+        if cutoff <= dt <= now + timedelta(days=1):
+            candidates.append(dt)
+
+    lower = text.lower()
+
+    # Relative: "N days/hours/weeks ago", "N Tagen"
+    for m in re.finditer(r"\b(\d+)\s+(minute|minuten|hour|hours|std|stunde|stunden|day|days|tag|tage|tagen|week|weeks|woche|wochen|month|months|monat|monate|monaten)\b", lower):
+        n = int(m.group(1))
+        unit = m.group(2)
+        if unit.startswith(("minute", "minut")):       delta = timedelta(minutes=n)
+        elif unit.startswith(("hour", "std", "stund")): delta = timedelta(hours=n)
+        elif unit.startswith(("day", "tag")):           delta = timedelta(days=n)
+        elif unit.startswith(("week", "woch")):         delta = timedelta(weeks=n)
+        else:                                           delta = timedelta(days=30 * n)
+        _accept(now - delta)
+
+    if re.search(r"\b(heute|today)\b", lower):
+        _accept(now)
+    if re.search(r"\b(gestern|yesterday)\b", lower):
+        _accept(now - timedelta(days=1))
+
+    # Absolute ISO: 2026-04-14 (optionally followed by T... timestamp)
+    for m in re.finditer(r"\b(20\d{2})-(\d{2})-(\d{2})(?!\d)", text):
+        try:
+            _accept(datetime(int(m.group(1)), int(m.group(2)), int(m.group(3))))
+        except ValueError:
+            pass
+
+    # Absolute DE numeric: 14.04.2026 / 14.4.2026
+    for m in re.finditer(r"\b(\d{1,2})\.(\d{1,2})\.(20\d{2})\b", text):
+        try:
+            _accept(datetime(int(m.group(3)), int(m.group(2)), int(m.group(1))))
+        except ValueError:
+            pass
+
+    # Absolute EN numeric: 04/14/2026 or 14/04/2026 — ambiguous, try both
+    for m in re.finditer(r"\b(\d{1,2})/(\d{1,2})/(20\d{2})\b", text):
+        a, b, y = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        for day, mon in ((a, b), (b, a)):
+            try:
+                _accept(datetime(y, mon, day))
+            except ValueError:
+                pass
+
+    # DE/EN month names: 14. April 2026 / April 14, 2026
+    for m in re.finditer(r"\b(\d{1,2})\.?\s+([a-zäA-ZÄ]+)\s+(20\d{2})\b", text):
+        day = int(m.group(1))
+        mon = _DE_MONTHS.get(m.group(2).lower()) or _EN_MONTHS.get(m.group(2).lower())
+        if mon:
+            try: _accept(datetime(int(m.group(3)), mon, day))
+            except ValueError: pass
+    for m in re.finditer(r"\b([a-zA-Z]+)\s+(\d{1,2}),?\s+(20\d{2})\b", text):
+        mon = _EN_MONTHS.get(m.group(1).lower())
+        if mon:
+            try: _accept(datetime(int(m.group(3)), mon, int(m.group(2))))
+            except ValueError: pass
+
+    if not candidates:
+        return None
+    # Prefer the most recent plausible past date.
+    candidates.sort(reverse=True)
+    return candidates[0]
+
+
+# ---------------------------------------------------------------------------
 # Source: Freelancermap (Playwright — RSS no longer available)
 # ---------------------------------------------------------------------------
 
@@ -144,6 +243,7 @@ async def scout_freelancermap(queue: asyncio.Queue, query: str) -> int:
 
             async def _fetch_detail(project_url: str, title: str) -> RawListing:
                 desc = ""
+                posted_at = None
                 async with sem:
                     try:
                         detail = await context.new_page()
@@ -158,6 +258,8 @@ async def scout_freelancermap(queue: asyncio.Queue, query: str) -> int:
                             desc = body.split("Beschreibung", 1)[1].strip()[:1000]
                         else:
                             desc = body[:1000]
+                        # Posting date tends to live near the top of detail pages.
+                        posted_at = _parse_posting_date(body[:2000])
                         await detail.close()
                     except Exception:
                         pass  # Keep empty desc; title alone may suffice.
@@ -167,6 +269,7 @@ async def scout_freelancermap(queue: asyncio.Queue, query: str) -> int:
                     url=project_url,
                     raw_description=desc,
                     source="freelancermap",
+                    posted_at=posted_at,
                 )
 
             results = await asyncio.gather(*[
@@ -235,6 +338,10 @@ async def scout_gulp(queue: asyncio.Queue, query: str) -> int:
                 )
                 desc = (await desc_el.inner_text()).strip() if desc_el else ""
 
+                # Gulp cards embed a date somewhere in their inner text.
+                card_text = await card.inner_text()
+                posted_at = _parse_posting_date(card_text)
+
                 if title:
                     results.append(
                         RawListing(
@@ -242,6 +349,7 @@ async def scout_gulp(queue: asyncio.Queue, query: str) -> int:
                             url=href or url,
                             raw_description=desc,
                             source="gulp",
+                            posted_at=posted_at,
                         )
                     )
 
@@ -306,6 +414,8 @@ async def scout_eursap(queue: asyncio.Queue) -> int:
                 if title_line.upper().startswith("SAP JOB VACANCY:"):
                     title_line = title_line[len("SAP JOB VACANCY:"):].strip()
 
+                posted_at = _parse_posting_date(text)
+
                 seen_hrefs.add(href)
                 results.append(
                     RawListing(
@@ -313,6 +423,7 @@ async def scout_eursap(queue: asyncio.Queue) -> int:
                         url=href,
                         raw_description=desc,
                         source="eursap",
+                        posted_at=posted_at,
                     )
                 )
 
@@ -386,6 +497,8 @@ async def scout_linkedin(queue: asyncio.Queue, query: str) -> int:
                 location = lines[3] if len(lines) > 3 else ""
                 desc = f"Company: {company}. Location: {location}."
 
+                posted_at = _parse_posting_date(text)
+
                 if title and len(title) > 5:
                     results.append(
                         RawListing(
@@ -393,6 +506,7 @@ async def scout_linkedin(queue: asyncio.Queue, query: str) -> int:
                             url=clean_href,
                             raw_description=desc,
                             source="linkedin",
+                            posted_at=posted_at,
                         )
                     )
 

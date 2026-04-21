@@ -81,6 +81,7 @@ async def analyze_one(
             raw_description=listing.raw_description,
             source=listing.source,
             scraped_at=listing.scraped_at,
+            posted_at=listing.posted_at,
             score=0,
             score_reason="parse error",
         )
@@ -91,6 +92,7 @@ async def analyze_one(
         raw_description=listing.raw_description,
         source=listing.source,
         scraped_at=listing.scraped_at,
+        posted_at=listing.posted_at,
         workload_days=data.get("workload_days"),
         remote_pct=data.get("remote_pct", 0),
         is_agency=data.get("is_agency", True),

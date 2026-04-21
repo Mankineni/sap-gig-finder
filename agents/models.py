@@ -10,6 +10,7 @@ class RawListing:
     raw_description: str
     source: str          # gulp | freelancermap | linkedin | upwork | eursap
     scraped_at: datetime = field(default_factory=datetime.utcnow)
+    posted_at: Optional[datetime] = None   # real posting date from the source, if extracted
 
 
 @dataclass
