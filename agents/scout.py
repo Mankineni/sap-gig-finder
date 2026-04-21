@@ -105,83 +105,125 @@ _EN_MONTHS = {
 }
 
 
-def _parse_posting_date(text: str, now: Optional[datetime] = None) -> Optional[datetime]:
-    """Best-effort extraction of a listing's posting date from raw page text.
+# Keywords that, when present just before a date, strongly indicate the
+# posting date (as opposed to a project start date, activity timestamp,
+# or unrelated prose-date mention).
+_POSTING_KEYWORDS = (
+    "veröffentlicht", "veroeffentlicht", "eingestellt", "online seit",
+    "publiziert", "erstellt am", "einstellungsdatum",
+    "posted on", "posted", "published", "listed on", "date posted",
+)
 
-    Strategy: collect candidate dates from multiple patterns (German/English
-    absolute + relative), keep only those in the past 180 days, and return
-    the most recent. This avoids false positives from project start dates
-    (which are typically in the future) and from prose-date mentions.
-    """
-    if not text:
-        return None
-    now = now or datetime.utcnow()
+
+def _within_range(dt: datetime, now: datetime) -> bool:
     cutoff = now - timedelta(days=180)
-    candidates: list[datetime] = []
+    return cutoff <= dt <= now + timedelta(days=1)
 
-    def _accept(dt: datetime) -> None:
-        if cutoff <= dt <= now + timedelta(days=1):
-            candidates.append(dt)
 
-    lower = text.lower()
+def _try_absolute_near(window: str, now: datetime) -> Optional[datetime]:
+    """Extract the first plausible absolute date from a small text window."""
+    # DE numeric: 15.04.2026
+    m = re.search(r"\b(\d{1,2})\.(\d{1,2})\.(20\d{2})\b", window)
+    if m:
+        try:
+            dt = datetime(int(m.group(3)), int(m.group(2)), int(m.group(1)))
+            if _within_range(dt, now): return dt
+        except ValueError: pass
+    # ISO: 2026-04-15
+    m = re.search(r"\b(20\d{2})-(\d{2})-(\d{2})(?!\d)", window)
+    if m:
+        try:
+            dt = datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+            if _within_range(dt, now): return dt
+        except ValueError: pass
+    # DE month names: 15. April 2026
+    m = re.search(r"\b(\d{1,2})\.?\s+([a-zäA-ZÄ]+)\s+(20\d{2})\b", window)
+    if m:
+        mon = _DE_MONTHS.get(m.group(2).lower()) or _EN_MONTHS.get(m.group(2).lower())
+        if mon:
+            try:
+                dt = datetime(int(m.group(3)), mon, int(m.group(1)))
+                if _within_range(dt, now): return dt
+            except ValueError: pass
+    # EN month names: April 15, 2026
+    m = re.search(r"\b([a-zA-Z]+)\s+(\d{1,2}),?\s+(20\d{2})\b", window)
+    if m:
+        mon = _EN_MONTHS.get(m.group(1).lower())
+        if mon:
+            try:
+                dt = datetime(int(m.group(3)), mon, int(m.group(2)))
+                if _within_range(dt, now): return dt
+            except ValueError: pass
+    return None
 
-    # Relative: "N days/hours/weeks ago", "N Tagen"
-    for m in re.finditer(r"\b(\d+)\s+(minute|minuten|hour|hours|std|stunde|stunden|day|days|tag|tage|tagen|week|weeks|woche|wochen|month|months|monat|monate|monaten)\b", lower):
-        n = int(m.group(1))
-        unit = m.group(2)
+
+def _try_relative_near(window: str, now: datetime) -> Optional[datetime]:
+    """Extract a relative date (N days ago, vor N Tagen, heute, ...)."""
+    lower = window.lower()
+    m = re.search(r"\b(\d+)\s+(minute|minuten|hour|hours|std|stunde|stunden|day|days|tag|tage|tagen|week|weeks|woche|wochen|month|months|monat|monate|monaten)\b", lower)
+    if m:
+        n, unit = int(m.group(1)), m.group(2)
         if unit.startswith(("minute", "minut")):       delta = timedelta(minutes=n)
         elif unit.startswith(("hour", "std", "stund")): delta = timedelta(hours=n)
         elif unit.startswith(("day", "tag")):           delta = timedelta(days=n)
         elif unit.startswith(("week", "woch")):         delta = timedelta(weeks=n)
         else:                                           delta = timedelta(days=30 * n)
-        _accept(now - delta)
-
+        dt = now - delta
+        if _within_range(dt, now): return dt
     if re.search(r"\b(heute|today)\b", lower):
-        _accept(now)
+        return now
     if re.search(r"\b(gestern|yesterday)\b", lower):
-        _accept(now - timedelta(days=1))
+        return now - timedelta(days=1)
+    return None
 
-    # Absolute ISO: 2026-04-14 (optionally followed by T... timestamp)
-    for m in re.finditer(r"\b(20\d{2})-(\d{2})-(\d{2})(?!\d)", text):
-        try:
-            _accept(datetime(int(m.group(1)), int(m.group(2)), int(m.group(3))))
-        except ValueError:
-            pass
 
-    # Absolute DE numeric: 14.04.2026 / 14.4.2026
+def _parse_posting_date(text: str, now: Optional[datetime] = None) -> Optional[datetime]:
+    """Extract a listing's posting date from raw page text.
+
+    Strategy, in order:
+      1. Keyword-anchored match — look for a date within ~40 chars *after*
+         a posting keyword like "veröffentlicht am" / "posted on". This is
+         by far the most reliable signal and runs first.
+      2. Fallback — collect all plausible absolute dates in the past 180
+         days and pick the oldest (posting dates are usually older than
+         activity/updated timestamps on the same page).
+
+    Returns None if nothing plausible is found.
+    """
+    if not text:
+        return None
+    now = now or datetime.utcnow()
+
+    # (1) Keyword-anchored extraction.
+    lower = text.lower()
+    for kw in _POSTING_KEYWORDS:
+        idx = lower.find(kw)
+        while idx != -1:
+            window = text[idx:idx + len(kw) + 80]
+            dt = _try_absolute_near(window, now) or _try_relative_near(window, now)
+            if dt is not None:
+                return dt
+            idx = lower.find(kw, idx + len(kw))
+
+    # (2) Fallback — collect all plausible absolute dates, pick the oldest.
+    # Oldest rather than newest: a listing page usually has the posting
+    # date as the oldest date on the page (activity/updated timestamps
+    # are more recent, project start dates are filtered out as future).
+    candidates: list[datetime] = []
     for m in re.finditer(r"\b(\d{1,2})\.(\d{1,2})\.(20\d{2})\b", text):
         try:
-            _accept(datetime(int(m.group(3)), int(m.group(2)), int(m.group(1))))
-        except ValueError:
-            pass
-
-    # Absolute EN numeric: 04/14/2026 or 14/04/2026 — ambiguous, try both
-    for m in re.finditer(r"\b(\d{1,2})/(\d{1,2})/(20\d{2})\b", text):
-        a, b, y = int(m.group(1)), int(m.group(2)), int(m.group(3))
-        for day, mon in ((a, b), (b, a)):
-            try:
-                _accept(datetime(y, mon, day))
-            except ValueError:
-                pass
-
-    # DE/EN month names: 14. April 2026 / April 14, 2026
-    for m in re.finditer(r"\b(\d{1,2})\.?\s+([a-zäA-ZÄ]+)\s+(20\d{2})\b", text):
-        day = int(m.group(1))
-        mon = _DE_MONTHS.get(m.group(2).lower()) or _EN_MONTHS.get(m.group(2).lower())
-        if mon:
-            try: _accept(datetime(int(m.group(3)), mon, day))
-            except ValueError: pass
-    for m in re.finditer(r"\b([a-zA-Z]+)\s+(\d{1,2}),?\s+(20\d{2})\b", text):
-        mon = _EN_MONTHS.get(m.group(1).lower())
-        if mon:
-            try: _accept(datetime(int(m.group(3)), mon, int(m.group(2))))
-            except ValueError: pass
+            dt = datetime(int(m.group(3)), int(m.group(2)), int(m.group(1)))
+            if _within_range(dt, now): candidates.append(dt)
+        except ValueError: pass
+    for m in re.finditer(r"\b(20\d{2})-(\d{2})-(\d{2})(?!\d)", text):
+        try:
+            dt = datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+            if _within_range(dt, now): candidates.append(dt)
+        except ValueError: pass
 
     if not candidates:
         return None
-    # Prefer the most recent plausible past date.
-    candidates.sort(reverse=True)
-    return candidates[0]
+    return min(candidates)
 
 
 # ---------------------------------------------------------------------------
