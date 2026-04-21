@@ -88,6 +88,136 @@
     }
     .btn-refresh:hover { opacity: 0.9; }
 
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+
+    .btn-hamburger {
+      background: var(--color-btn-bg);
+      color: var(--color-btn-text);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .btn-hamburger:hover { opacity: 0.85; }
+    .btn-hamburger .badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      padding: 0 5px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-hamburger .badge.visible { display: inline-flex; }
+
+    /* Drawer */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 10;
+    }
+    .drawer-backdrop.visible { opacity: 1; pointer-events: auto; }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 300px;
+      max-width: 85vw;
+      background: var(--color-bg);
+      border-left: 1px solid var(--color-border);
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      z-index: 11;
+    }
+    .drawer.visible { transform: translateX(0); }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .drawer-header h2 { font-size: 16px; font-weight: 700; }
+
+    .drawer-close {
+      background: transparent;
+      border: none;
+      color: var(--color-text);
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .drawer-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      user-select: none;
+    }
+    .drawer-item:hover { background: var(--color-surface); }
+    .drawer-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+    }
+    .drawer-item .count {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    .drawer-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--color-border);
+    }
+    .drawer-clear {
+      width: 100%;
+      background: var(--color-btn-bg);
+      color: var(--color-btn-text);
+      border: none;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .drawer-clear:hover { opacity: 0.85; }
+    .drawer-clear:disabled { opacity: 0.5; cursor: not-allowed; }
+
     /* Offline banner */
     .offline-banner {
       display: none;
@@ -236,9 +366,26 @@
         <h1>SAP Gig Radar</h1>
         <div class="subtitle" id="subtitle">Last updated: Unknown</div>
       </div>
-      <button class="btn-refresh" id="btnRefresh">Refresh</button>
+      <div class="header-actions">
+        <button class="btn-hamburger" id="btnHamburger" aria-label="Filter by domain">
+          &#9776;<span class="badge" id="domainBadge">0</span>
+        </button>
+        <button class="btn-refresh" id="btnRefresh">Refresh</button>
+      </div>
     </div>
   </header>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <h2>Filter by domain</h2>
+      <button class="drawer-close" id="drawerClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+    <div class="drawer-footer">
+      <button class="drawer-clear" id="drawerClear" disabled>Clear selection</button>
+    </div>
+  </aside>
 
   <div class="filter-bar" id="filterBar">
     <button class="filter-btn active" data-filter="all">All</button>
@@ -259,8 +406,24 @@
 
   let allListings = [];
   let activeFilter = "all";
+  let activeDomains = new Set();
   let totalInFile = 0;
   let deadRemoved = 0;
+
+  // Each domain matches if any tech_stack entry contains one of its keywords
+  // (case-insensitive substring). Order here controls drawer order.
+  const DOMAINS = [
+    { id: "sac",        label: "SAP Analytics Cloud (SAC)", keywords: ["sac", "analytics cloud"] },
+    { id: "bw",         label: "SAP BW / BW4HANA",          keywords: ["bw"] },
+    { id: "datasphere", label: "SAP Datasphere",            keywords: ["datasphere"] },
+    { id: "hana",       label: "SAP HANA",                  keywords: ["hana"] },
+    { id: "s4",         label: "SAP S/4HANA",               keywords: ["s/4hana", "s4hana"] },
+    { id: "fico",       label: "SAP FI / CO",               keywords: ["fi/co", "fico", "sap fi", "sap co"] },
+    { id: "mm",         label: "SAP MM",                    keywords: ["sap mm"] },
+    { id: "abap",       label: "SAP ABAP",                  keywords: ["abap"] },
+    { id: "btp",        label: "SAP BTP",                   keywords: ["btp"] },
+    { id: "ai",         label: "AI / Joule / LLM",          keywords: ["joule", "ai", "llm", "automation"] },
+  ];
 
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
@@ -322,6 +485,36 @@
     }
   }
 
+  function listingMatchesDomain(listing, domain) {
+    var stack = (listing.tech_stack || []).map(function (s) { return String(s).toLowerCase(); });
+    for (var i = 0; i < domain.keywords.length; i++) {
+      var kw = domain.keywords[i];
+      for (var j = 0; j < stack.length; j++) {
+        if (stack[j].indexOf(kw) !== -1) return true;
+      }
+    }
+    return false;
+  }
+
+  function applyDomainFilter(listings) {
+    if (activeDomains.size === 0) return listings;
+    var selected = DOMAINS.filter(function (d) { return activeDomains.has(d.id); });
+    return listings.filter(function (l) {
+      for (var i = 0; i < selected.length; i++) {
+        if (listingMatchesDomain(l, selected[i])) return true;
+      }
+      return false;
+    });
+  }
+
+  function countDomain(domain) {
+    var n = 0;
+    for (var i = 0; i < allListings.length; i++) {
+      if (listingMatchesDomain(allListings[i], domain)) n++;
+    }
+    return n;
+  }
+
   // ---- Rendering ----
   function escapeHtml(str) {
     var div = document.createElement("div");
@@ -359,7 +552,7 @@
   }
 
   function render() {
-    var filtered = applyFilter(allListings);
+    var filtered = applyDomainFilter(applyFilter(allListings));
     var grid = $("#cardGrid");
     var empty = $("#emptyState");
 
@@ -376,6 +569,44 @@
       " live gigs (" + totalInFile + " total in file, " + deadRemoved + " dead removed)";
   }
 
+  // ---- Drawer ----
+  function buildDrawer() {
+    var body = $("#drawerBody");
+    body.innerHTML = DOMAINS.map(function (d) {
+      var count = countDomain(d);
+      var checked = activeDomains.has(d.id) ? " checked" : "";
+      return '<label class="drawer-item">' +
+        '<input type="checkbox" data-domain="' + d.id + '"' + checked + '>' +
+        '<span>' + escapeHtml(d.label) + '</span>' +
+        '<span class="count">' + count + '</span>' +
+      '</label>';
+    }).join("");
+  }
+
+  function updateDomainBadge() {
+    var badge = $("#domainBadge");
+    if (activeDomains.size === 0) {
+      badge.classList.remove("visible");
+    } else {
+      badge.textContent = activeDomains.size;
+      badge.classList.add("visible");
+    }
+    $("#drawerClear").disabled = activeDomains.size === 0;
+  }
+
+  function openDrawer() {
+    buildDrawer();
+    $("#drawer").classList.add("visible");
+    $("#drawer").setAttribute("aria-hidden", "false");
+    $("#drawerBackdrop").classList.add("visible");
+  }
+
+  function closeDrawer() {
+    $("#drawer").classList.remove("visible");
+    $("#drawer").setAttribute("aria-hidden", "true");
+    $("#drawerBackdrop").classList.remove("visible");
+  }
+
   // ---- Filter buttons ----
   $("#filterBar").addEventListener("click", function (e) {
     var btn = e.target.closest(".filter-btn");
@@ -388,6 +619,28 @@
 
   // ---- Refresh button ----
   $("#btnRefresh").addEventListener("click", fetchData);
+
+  // ---- Hamburger / drawer ----
+  $("#btnHamburger").addEventListener("click", openDrawer);
+  $("#drawerClose").addEventListener("click", closeDrawer);
+  $("#drawerBackdrop").addEventListener("click", closeDrawer);
+  $("#drawerBody").addEventListener("change", function (e) {
+    var cb = e.target;
+    if (cb.type !== "checkbox") return;
+    var id = cb.dataset.domain;
+    if (cb.checked) activeDomains.add(id); else activeDomains.delete(id);
+    updateDomainBadge();
+    render();
+  });
+  $("#drawerClear").addEventListener("click", function () {
+    activeDomains.clear();
+    buildDrawer();
+    updateDomainBadge();
+    render();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeDrawer();
+  });
 
   // ---- Init ----
   fetchData();
