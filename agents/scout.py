@@ -138,36 +138,40 @@ async def scout_freelancermap(queue: asyncio.Queue, query: str) -> int:
             if not candidates:
                 await _save_debug(page, label)
 
-            # Visit each detail page (up to 15) for the full description.
-            results: list[RawListing] = []
-            for project_url, title in candidates[:15]:
-                desc = ""
-                try:
-                    detail = await context.new_page()
-                    await detail.goto(
-                        project_url,
-                        wait_until="domcontentloaded",
-                        timeout=20_000,
-                    )
-                    await detail.wait_for_timeout(2_000)
-                    body = await detail.inner_text("main")
-                    # Extract text after "Beschreibung" heading if present.
-                    if "Beschreibung" in body:
-                        desc = body.split("Beschreibung", 1)[1].strip()[:1000]
-                    else:
-                        desc = body[:1000]
-                    await detail.close()
-                except Exception:
-                    pass  # Keep empty desc; title alone may suffice.
+            # Fetch up to 15 detail pages in parallel (semaphore caps concurrency
+            # to 5 to avoid tripping bot detection).
+            sem = asyncio.Semaphore(5)
 
-                results.append(
-                    RawListing(
-                        title=title,
-                        url=project_url,
-                        raw_description=desc,
-                        source="freelancermap",
-                    )
+            async def _fetch_detail(project_url: str, title: str) -> RawListing:
+                desc = ""
+                async with sem:
+                    try:
+                        detail = await context.new_page()
+                        await detail.goto(
+                            project_url,
+                            wait_until="domcontentloaded",
+                            timeout=20_000,
+                        )
+                        await detail.wait_for_timeout(2_000)
+                        body = await detail.inner_text("main")
+                        if "Beschreibung" in body:
+                            desc = body.split("Beschreibung", 1)[1].strip()[:1000]
+                        else:
+                            desc = body[:1000]
+                        await detail.close()
+                    except Exception:
+                        pass  # Keep empty desc; title alone may suffice.
+
+                return RawListing(
+                    title=title,
+                    url=project_url,
+                    raw_description=desc,
+                    source="freelancermap",
                 )
+
+            results = await asyncio.gather(*[
+                _fetch_detail(u, t) for u, t in candidates[:15]
+            ])
 
             await browser.close()
             return results
