@@ -377,6 +377,19 @@
     }
 
     .card-meta { font-size: 13px; color: var(--color-text-muted); }
+    .card-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .card-date {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .card-date[title] { cursor: help; }
     .card-tags { display: flex; gap: 4px; flex-wrap: wrap; }
 
     .tag {
@@ -620,6 +633,22 @@
     return div.innerHTML;
   }
 
+  function formatRelativeDate(isoStr) {
+    if (!isoStr) return { short: "", full: "" };
+    const d = new Date(isoStr);
+    if (isNaN(d)) return { short: "", full: "" };
+    const diffMs = Date.now() - d.getTime();
+    const diffDays = Math.floor(diffMs / 86400000);
+    const full = d.toLocaleDateString() + " " + d.toLocaleTimeString();
+    let short;
+    if (diffDays < 0)      short = d.toLocaleDateString();
+    else if (diffDays === 0) short = "today";
+    else if (diffDays === 1) short = "1d ago";
+    else if (diffDays < 14)  short = diffDays + "d ago";
+    else                     short = d.toLocaleDateString();
+    return { short, full };
+  }
+
   function renderCard(listing) {
     const scoreClass = listing.score >= 8 ? "pill-score-high" : "pill-score-mid";
     const sourceClass = "pill-source-" + listing.source;
@@ -630,6 +659,11 @@
     const directBadge = listing.is_agency === false
       ? '<span class="pill pill-direct">Direct client</span>' : "";
 
+    const dateInfo = formatRelativeDate(listing.scraped_at || listing.verified_at);
+    const dateHtml = dateInfo.short
+      ? '<span class="card-date" title="Found: ' + escapeHtml(dateInfo.full) + '">Found ' + escapeHtml(dateInfo.short) + '</span>'
+      : '';
+
     return '<div class="card">' +
       '<div class="card-title">' + escapeHtml(listing.title) + '</div>' +
       '<div class="card-badges">' +
@@ -638,7 +672,10 @@
         directBadge +
       '</div>' +
       '<div class="card-meta">Days/week: ' + days + '</div>' +
-      '<div class="card-meta">Remote: ' + listing.remote_pct + '%</div>' +
+      '<div class="card-meta card-meta-row">' +
+        '<span>Remote: ' + listing.remote_pct + '%</span>' +
+        dateHtml +
+      '</div>' +
       (tagsHtml ? '<div class="card-tags">' + tagsHtml + '</div>' : '') +
       '<a class="btn-apply" href="' + escapeHtml(listing.url) + '" target="_blank" rel="noopener">Apply &rarr;</a>' +
     '</div>';
