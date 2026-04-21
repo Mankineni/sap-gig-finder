@@ -41,14 +41,19 @@ def _build_table(listings: list[ValidatedListing]) -> str:
 
 def format_report(listings: list[ValidatedListing], stats: dict) -> str:
     """Build a full Markdown report from validated listings and pipeline stats."""
+    # Defensive: a None score should never reach here, but a single bad
+    # entry would crash sorted() and kill the whole pipeline. Coerce to 0.
+    def _score(l):
+        return l.score if l.score is not None else 0
+
     live = sorted(
         [l for l in listings if l.status == "live"],
-        key=lambda l: l.score,
+        key=_score,
         reverse=True,
     )
 
-    top_picks = [l for l in live if l.score >= 8]
-    rest = [l for l in live if l.score < 8]
+    top_picks = [l for l in live if _score(l) >= 8]
+    rest = [l for l in live if _score(l) < 8]
     today = date.today().isoformat()
     live_count = len(live)
 

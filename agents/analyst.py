@@ -86,6 +86,11 @@ async def analyze_one(
             score_reason="parse error",
         )
 
+    # Claude occasionally returns `"score": null` or omits numeric fields —
+    # coerce to safe defaults so downstream comparisons don't hit TypeError.
+    def _int_or(v, default):
+        return default if v is None else v
+
     return AnalyzedListing(
         title=listing.title,
         url=listing.url,
@@ -93,12 +98,12 @@ async def analyze_one(
         source=listing.source,
         scraped_at=listing.scraped_at,
         posted_at=listing.posted_at,
-        workload_days=data.get("workload_days"),
-        remote_pct=data.get("remote_pct", 0),
-        is_agency=data.get("is_agency", True),
-        tech_stack=data.get("tech_stack", []),
-        score=data.get("score", 0),
-        score_reason=data.get("score_reason", ""),
+        workload_days=data.get("workload_days"),  # None allowed — represents "flexible"
+        remote_pct=_int_or(data.get("remote_pct"), 0),
+        is_agency=data.get("is_agency") if data.get("is_agency") is not None else True,
+        tech_stack=data.get("tech_stack") or [],
+        score=_int_or(data.get("score"), 0),
+        score_reason=data.get("score_reason") or "",
     )
 
 
